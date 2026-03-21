@@ -2,22 +2,30 @@
  * Busy Bee Billing - Design System Implementation
  */
 
-import { useState } from 'react'
-import { FiCreditCard, FiDownload, FiPlus, FiTrash2 } from 'react-icons/fi'
-import { PageContainer, Card, CardHeader, CardTitle, CardContent, Button, Input, Grid, Badge } from '../components'
+import { useState } from 'react';
+import { FiCreditCard, FiDownload, FiPlus, FiTrash2 } from 'react-icons/fi';
+import {
+  PageContainer,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Input,
+  Grid,
+  Badge,
+} from '../components';
 
 const INVOICES = [
-  { id: 1, date: '2024-01-15', amount: 12.00, status: 'paid' },
-  { id: 2, date: '2023-12-15', amount: 12.00, status: 'paid' },
-  { id: 3, date: '2023-11-15', amount: 12.00, status: 'paid' },
-]
+  { id: 1, date: '2024-01-15', amount: 12.0, status: 'paid' },
+  { id: 2, date: '2023-12-15', amount: 12.0, status: 'paid' },
+  { id: 3, date: '2023-11-15', amount: 12.0, status: 'paid' },
+];
 
-const PAYMENT_METHODS = [
-  { id: 1, type: 'visa', last4: '4242', exp: '12/25', default: true },
-]
+const PAYMENT_METHODS = [{ id: 1, type: 'visa', last4: '4242', exp: '12/25', default: true }];
 
 function Billing() {
-  const [loading, setLoading] = useState(null)
+  const [loading, setLoading] = useState(null);
 
   return (
     <PageContainer title="Billing" subtitle="Manage your payments and invoices">
@@ -41,22 +49,36 @@ function Billing() {
       <Grid cols={{ default: 1, lg: 2 }} className="gap-6">
         {/* Payment Methods */}
         <Card>
-          <CardHeader title="Payment Methods" action={<Button size="sm"><FiPlus className="w-4 h-4 mr-1" /> Add</Button>} />
+          <CardHeader
+            title="Payment Methods"
+            action={
+              <Button size="sm">
+                <FiPlus className="w-4 h-4 mr-1" /> Add
+              </Button>
+            }
+          />
           <CardContent className="space-y-4">
-            {PAYMENT_METHODS.map(pm => (
-              <div key={pm.id} className="flex items-center justify-between p-4 rounded-lg border border-border">
+            {PAYMENT_METHODS.map((pm) => (
+              <div
+                key={pm.id}
+                className="flex items-center justify-between p-4 rounded-lg border border-border"
+              >
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-secondary rounded">
                     <FiCreditCard className="w-5 h-5 text-foreground" />
                   </div>
                   <div>
-                    <p className="font-medium text-foreground capitalize">{pm.type} •••• {pm.last4}</p>
+                    <p className="font-medium text-foreground capitalize">
+                      {pm.type} •••• {pm.last4}
+                    </p>
                     <p className="text-sm text-foreground-muted">Expires {pm.exp}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {pm.default && <Badge variant="outline">Default</Badge>}
-                  <Button variant="ghost" size="sm"><FiTrash2 className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="sm">
+                    <FiTrash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -77,7 +99,7 @@ function Billing() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {INVOICES.map(inv => (
+                {INVOICES.map((inv) => (
                   <tr key={inv.id}>
                     <td className="p-3 text-foreground">{inv.date}</td>
                     <td className="p-3 text-foreground">${inv.amount.toFixed(2)}</td>
@@ -97,7 +119,7 @@ function Billing() {
         </Card>
       </Grid>
     </PageContainer>
-  )
+  );
 }
 
-export default Billing
+export default Billing;

@@ -1,96 +1,123 @@
-import { useState, useEffect } from 'react'
-import { Box, VStack, HStack, Text, Heading, Avatar, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Input, Badge, SimpleGrid, Divider } from '@chakra-ui/react'
-import { useAuth } from '../context/AuthContext'
-import { profileAPI } from '../services/api'
+/**
+ * Busy Bee Profile - Design System Implementation
+ */
+
+import { useState, useEffect } from 'react';
+import {
+  PageContainer,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Input,
+  Avatar,
+  Badge,
+  Grid,
+  LoadingOverlay,
+} from '../components';
+
+// Mock user data
+const mockProfile = {
+  full_name: 'John Doe',
+  email: 'john@example.com',
+  subscription_tier: 'pro',
+  member_since: 'January 2024',
+  avatar: null,
+  phone: '+1 (555) 123-4567',
+  timezone: 'America/New_York',
+  bio: 'Entrepreneur focused on personal growth and financial independence.',
+};
 
 function Profile() {
-  const { user } = useAuth()
-  const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(mockProfile);
 
   useEffect(() => {
-    loadProfile()
-  }, [])
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
-  const loadProfile = async () => {
-    try {
-      const response = await profileAPI.getProfile()
-      setProfile(response.data)
-    } catch (err) {
-      console.error('Failed to load profile:', err)
-    } finally {
-      setLoading(false)
-    }
+  if (loading) {
+    return <LoadingOverlay message="Loading profile..." />;
   }
 
   return (
-    <VStack spacing={6} align="stretch">
-      <Heading size="lg">Profile</Heading>
-
-      <Card>
-        <CardBody>
-          <HStack spacing={6}>
-            <Avatar size="xl" name={user?.full_name || user?.email} />
-            <VStack align="start" spacing={1}>
-              <HStack>
-                <Text fontSize="xl" fontWeight="bold">{profile?.full_name || 'User'}</Text>
-                <Badge colorScheme="brand">{user?.subscription_tier || 'free'}</Badge>
-              </HStack>
-              <Text color="gray.500">{profile?.email || user?.email}</Text>
-              <Text fontSize="sm" color="gray.400">Member since {new Date().toLocaleDateString()}</Text>
-            </VStack>
-          </HStack>
-        </CardBody>
+    <PageContainer title="Profile" subtitle="Manage your account settings">
+      {/* Profile Header */}
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            <Avatar size="2xl" name={profile.full_name} className="w-24 h-24" />
+            <div className="text-center sm:text-left">
+              <div className="flex items-center gap-3 justify-center sm:justify-start mb-1">
+                <h2 className="text-2xl font-bold text-foreground">{profile.full_name}</h2>
+                <Badge variant="success">{profile.subscription_tier}</Badge>
+              </div>
+              <p className="text-foreground-muted">{profile.email}</p>
+              <p className="text-sm text-foreground-muted">Member since {profile.member_since}</p>
+            </div>
+          </div>
+        </CardContent>
       </Card>
 
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+      <Grid cols={{ default: 1, md: 2 }} className="gap-6">
+        {/* Account Info */}
         <Card>
-          <CardHeader>
-            <Heading size="sm">Account Info</Heading>
-          </CardHeader>
-          <CardBody pt={0}>
-            <VStack align="stretch" spacing={4}>
-              <FormControl>
-                <FormLabel fontSize="sm">Full Name</FormLabel>
-                <Input defaultValue={profile?.full_name || ''} />
-              </FormControl>
-              <FormControl>
-                <FormLabel fontSize="sm">Display Name</FormLabel>
-                <Input defaultValue={profile?.display_name || ''} />
-              </FormControl>
-              <Button colorScheme="brand" alignSelf="start">Save Changes</Button>
-            </VStack>
-          </CardBody>
+          <CardHeader title="Account Information" />
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Full Name</label>
+              <Input defaultValue={profile.full_name} />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Email</label>
+              <Input type="email" defaultValue={profile.email} />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Phone</label>
+              <Input type="tel" defaultValue={profile.phone} />
+            </div>
+            <Button className="w-full">Save Changes</Button>
+          </CardContent>
         </Card>
 
+        {/* Preferences */}
         <Card>
-          <CardHeader>
-            <Heading size="sm">Stats</Heading>
-          </CardHeader>
-          <CardBody pt={0}>
-            <SimpleGrid columns={2} spacing={4}>
-              <Box>
-                <Text fontSize="2xl" fontWeight="bold">12</Text>
-                <Text fontSize="sm" color="gray.500">Goals Completed</Text>
-              </Box>
-              <Box>
-                <Text fontSize="2xl" fontWeight="bold">48</Text>
-                <Text fontSize="sm" color="gray.500">Tasks Done</Text>
-              </Box>
-              <Box>
-                <Text fontSize="2xl" fontWeight="bold">23</Text>
-                <Text fontSize="sm" color="gray.500">Day Streak</Text>
-              </Box>
-              <Box>
-                <Text fontSize="2xl" fontWeight="bold">15</Text>
-                <Text fontSize="sm" color="gray.500">AI Insights</Text>
-              </Box>
-            </SimpleGrid>
-          </CardBody>
+          <CardHeader title="Preferences" />
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Timezone</label>
+              <select className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground">
+                <option>America/New_York</option>
+                <option>America/Los_Angeles</option>
+                <option>Europe/London</option>
+                <option>Asia/Tokyo</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Bio</label>
+              <textarea
+                defaultValue={profile.bio}
+                rows={4}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-card text-foreground resize-none"
+              />
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg border border-border">
+              <div>
+                <p className="font-medium text-foreground">Email Notifications</p>
+                <p className="text-sm text-foreground-muted">Receive updates via email</p>
+              </div>
+              <input type="checkbox" defaultChecked className="h-5 w-5" />
+            </div>
+            <Button variant="outline" className="w-full">
+              Update Preferences
+            </Button>
+          </CardContent>
         </Card>
-      </SimpleGrid>
-    </VStack>
-  )
+      </Grid>
+    </PageContainer>
+  );
 }
 
-export default Profile
+export default Profile;

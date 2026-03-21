@@ -1,114 +1,151 @@
-import { useState, useEffect } from 'react'
-import { Box, VStack, HStack, Text, Heading, Card, CardBody, Badge, Button, IconButton, Select, Tabs, TabList, Tab, TabPanels, TabPanel } from '@chakra-ui/react'
-import { FiBell, FiCheck, FiTrash2, FiSettings, FiAlertCircle, FiInfo, FiCheckCircle } from 'react-icons/fi'
-import { useAuth } from '../context/AuthContext'
+/**
+ * Busy Bee Notifications - Design System Implementation
+ */
 
-function NotificationItem({ notification, onMarkRead, onDelete }) {
-  const getIcon = (type) => {
-    switch (type) {
-      case 'success': return <FiCheckCircle color="green" />
-      case 'warning': return <FiAlertCircle color="orange" />
-      case 'error': return <FiAlertCircle color="red" />
-      default: return <FiInfo color="blue" />
-    }
-  }
+import { useState, useEffect } from 'react';
+import {
+  FiBell,
+  FiCheck,
+  FiTrash2,
+  FiMessageSquare,
+  FiCalendar,
+  FiAlertCircle,
+} from 'react-icons/fi';
+import {
+  PageContainer,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Badge,
+  LoadingOverlay,
+} from '../components';
 
-  return (
-    <HStack p={4} borderBottom="1px" borderColor="gray.100" spacing={4}>
-      <Box p={2} borderRadius="lg" bg="gray.50">
-        {getIcon(notification.type)}
-      </Box>
-      <VStack align="start" spacing={0} flex={1}>
-        <Text fontWeight="500">{notification.title}</Text>
-        <Text fontSize="sm" color="gray.500">{notification.message}</Text>
-        <Text fontSize="xs" color="gray.400">{notification.time}</Text>
-      </VStack>
-      <VStack>
-        {!notification.read && <Button size="xs" onClick={() => onMarkRead(notification.id)}>Mark Read</Button>}
-        <IconButton icon={<FiTrash2 />} size="xs" variant="ghost" colorScheme="red" onClick={() => onDelete(notification.id)} />
-      </VStack>
-    </HStack>
-  )
-}
+const mockNotifications = [
+  {
+    id: 1,
+    type: 'goal',
+    title: 'Goal deadline approaching',
+    desc: 'Run 5K is due in 2 days',
+    time: '2h ago',
+    read: false,
+  },
+  {
+    id: 2,
+    type: 'social',
+    title: 'New comment',
+    desc: 'Jane commented on your progress',
+    time: '5h ago',
+    read: false,
+  },
+  {
+    id: 3,
+    type: 'system',
+    title: 'Weekly summary ready',
+    desc: 'Your weekly analytics are available',
+    time: '1d ago',
+    read: true,
+  },
+  {
+    id: 4,
+    type: 'reminder',
+    title: 'Daily meditation',
+    desc: "Don't forget your morning meditation",
+    time: '2d ago',
+    read: true,
+  },
+];
+
+const ICONS = {
+  goal: FiCalendar,
+  social: FiMessageSquare,
+  system: FiAlertCircle,
+  reminder: FiBell,
+};
 
 function Notifications() {
-  const { user } = useAuth()
-  const [notifications, setNotifications] = useState([])
-  const [filter, setFilter] = useState('all')
+  const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    // Demo notifications
-    setNotifications([
-      { id: 1, type: 'success', title: 'Goal Completed!', message: 'You completed "Learn Python" goal!', time: '2 hours ago', read: false },
-      { id: 2, type: 'info', title: 'New Feature Available', message: 'Check out the new Analytics dashboard', time: '1 day ago', read: true },
-      { id: 3, type: 'warning', title: 'Streak at Risk', message: 'Complete a task today to keep your streak!', time: '2 days ago', read: false },
-      { id: 4, type: 'info', title: 'Welcome to Busy Bee!', message: 'Start by creating your first goal', time: '1 week ago', read: true },
-    ])
-  }, [])
+    const timer = setTimeout(() => {
+      setNotifications(mockNotifications);
+      setLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const markAsRead = (id) => {
-    setNotifications(notifications.map(n => n.id === id ? { ...n, read: true } : n))
-  }
+    setNotifications(notifications.map((n) => (n.id === id ? { ...n, read: true } : n)));
+  };
 
-  const markAllRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })))
-  }
+  const filtered = filter === 'all' ? notifications : notifications.filter((n) => !n.read);
 
-  const deleteNotification = (id) => {
-    setNotifications(notifications.filter(n => n.id !== id))
-  }
-
-  const clearAll = () => {
-    setNotifications([])
-  }
-
-  const filtered = notifications.filter(n => {
-    if (filter === 'unread') return !n.read
-    if (filter === 'read') return n.read
-    return true
-  })
-
-  const unreadCount = notifications.filter(n => !n.read).length
+  if (loading) return <LoadingOverlay message="Loading notifications..." />;
 
   return (
-    <Box p={6}>
-      <VStack spacing={6} align="stretch">
-        {/* Header */}
-        <HStack justify="space-between">
-          <HStack>
-            <Heading size="lg">Notifications</Heading>
-            {unreadCount > 0 && <Badge colorScheme="red">{unreadCount} new</Badge>}
-          </HStack>
-          <HStack>
-            <Button size="sm" variant="ghost" onClick={markAllRead}>Mark all read</Button>
-            <Button size="sm" variant="ghost" colorScheme="red" onClick={clearAll}>Clear all</Button>
-          </HStack>
-        </HStack>
+    <PageContainer title="Notifications" subtitle="Stay updated on your progress">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex gap-2">
+          {['all', 'unread'].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                filter === f ? 'bg-primary text-white' : 'bg-secondary text-foreground'
+              }`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+        <Button variant="ghost" size="sm">
+          Mark all read
+        </Button>
+      </div>
 
-        {/* Filters */}
-        <Tabs onChange={(index) => setFilter(['all', 'unread', 'read'][index])}>
-          <TabList>
-            <Tab>All ({notifications.length})</Tab>
-            <Tab>Unread ({unreadCount})</Tab>
-            <Tab>Read ({notifications.filter(n => n.read).length})</Tab>
-          </TabList>
-        </Tabs>
-
-        {/* Notifications List */}
-        {filtered.length === 0 ? (
-          <Card><CardBody textAlign="center" py={12}><Text fontSize="3xl">🔔</Text><Text mt={4} color="gray.500">No notifications</Text></CardBody></Card>
-        ) : (
-          <Card>
-            <CardBody p={0}>
-              {filtered.map(n => (
-                <NotificationItem key={n.id} notification={n} onMarkRead={markAsRead} onDelete={deleteNotification} />
-              ))}
-            </CardBody>
-          </Card>
-        )}
-      </VStack>
-    </Box>
-  )
+      <Card>
+        <CardContent className="p-0">
+          {filtered.length > 0 ? (
+            filtered.map((notif) => {
+              const Icon = ICONS[notif.type];
+              return (
+                <div
+                  key={notif.id}
+                  className={`flex items-start gap-4 p-4 border-b border-border last:border-0 ${!notif.read ? 'bg-primary/5' : ''}`}
+                >
+                  <div className="p-2 rounded-lg bg-secondary">
+                    <Icon className="w-5 h-5 text-foreground" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-foreground">{notif.title}</p>
+                      {!notif.read && (
+                        <Badge variant="success" className="text-xs">
+                          New
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-foreground-muted">{notif.desc}</p>
+                    <p className="text-xs text-foreground-muted mt-1">{notif.time}</p>
+                  </div>
+                  {!notif.read && (
+                    <Button variant="ghost" size="sm" onClick={() => markAsRead(notif.id)}>
+                      <FiCheck className="w-4 h-4" />
+                    </Button>
+                  )}
+                </div>
+              );
+            })
+          ) : (
+            <div className="p-8 text-center text-foreground-muted">No notifications</div>
+          )}
+        </CardContent>
+      </Card>
+    </PageContainer>
+  );
 }
 
-export default Notifications
+export default Notifications;

@@ -1,103 +1,118 @@
-import { useState } from 'react'
-import { Box, VStack, HStack, Text, Button, Input, FormControl, FormLabel, Link, Alert, AlertIcon, InputGroup, InputRightElement, IconButton } from '@chakra-ui/react'
-import { Link as RouterLink, useNavigate } from 'react-router-dom'
-import { FiEye, FiEyeOff } from 'react-icons/fi'
-import { useAuth } from '../context/AuthContext'
+/**
+ * Busy Bee Signup - Design System Implementation
+ */
 
-function Signup() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const { signup, error } = useAuth()
-  const navigate = useNavigate()
+import { useState } from 'react';
+import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
+import { Button, Input, Card, CardContent, Checkbox } from '../components';
+
+function Signup({ onNavigate }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const result = await signup(email, password, fullName)
-    setLoading(false)
-    if (result) {
-      setSuccess(true)
-    }
-  }
-
-  if (success) {
-    return (
-      <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg="gray.50" p={4}>
-        <Box w="full" maxW="400px" bg="white" p={8} rounded="2xl" boxShadow="sm" textAlign="center">
-          <VStack spacing={4}>
-            <Text fontSize="4xl">✅</Text>
-            <Text fontSize="xl" fontWeight="600">Check your email!</Text>
-            <Text color="gray.500">We've sent a verification link to {email}</Text>
-            <Link as={RouterLink} to="/login" color="brand.500" fontWeight="500">
-              Back to login
-            </Link>
-          </VStack>
-        </Box>
-      </Box>
-    )
-  }
+    e.preventDefault();
+    setLoading(true);
+    // Simulate signup
+    setTimeout(() => setLoading(false), 1000);
+  };
 
   return (
-    <Box minH="100vh" display="flex" alignItems="center" justifyContent="center" bg="gray.50" p={4}>
-      <Box w="full" maxW="400px">
-        <VStack mb={8} spacing={2}>
-          <HStack spacing={2}>
-            <Box w={12} h={12} bg="brand.500" rounded="xl" display="flex" alignItems="center" justifyContent="center">
-              <Text fontSize="2xl" fontWeight="bold" color="white">B</Text>
-            </Box>
-            <VStack align="start" spacing={0}>
-              <Text fontWeight="bold" fontSize="2xl">Busy Bee</Text>
-              <Text fontSize="sm" color="gray.500">Create your account</Text>
-            </VStack>
-          </HStack>
-        </VStack>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-foreground">Busy Bee</h1>
+          <p className="text-foreground-muted mt-2">Create your account</p>
+        </div>
 
-        <Box bg="white" p={8} rounded="2xl" boxShadow="sm">
-          <VStack spacing={6} as="form" onSubmit={handleSubmit}>
-            {error && (
-              <Alert status="error" borderRadius="lg">
-                <AlertIcon />
-                {error}
-              </Alert>
-            )}
+        <Card>
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Full Name</label>
+                <div className="relative">
+                  <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted" />
+                  <input
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
 
-            <FormControl>
-              <FormLabel fontSize="sm">Full Name</FormLabel>
-              <Input placeholder="John Doe" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-            </FormControl>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Email</label>
+                <div className="relative">
+                  <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted" />
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
 
-            <FormControl>
-              <FormLabel fontSize="sm">Email</FormLabel>
-              <Input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </FormControl>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Password</label>
+                <div className="relative">
+                  <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-muted" />
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-card text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    required
+                  />
+                </div>
+                <p className="text-xs text-foreground-muted">Must be at least 8 characters</p>
+              </div>
 
-            <FormControl>
-              <FormLabel fontSize="sm">Password</FormLabel>
-              <InputGroup>
-                <Input type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                <InputRightElement>
-                  <IconButton variant="ghost" size="sm" icon={showPassword ? <FiEyeOff /> : <FiEye />} onClick={() => setShowPassword(!showPassword)} />
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
+              <div className="flex items-start gap-3">
+                <input type="checkbox" className="mt-1 h-4 w-4" required />
+                <p className="text-sm text-foreground-muted">
+                  I agree to the{' '}
+                  <button type="button" className="text-primary hover:underline">
+                    Terms of Service
+                  </button>{' '}
+                  and{' '}
+                  <button type="button" className="text-primary hover:underline">
+                    Privacy Policy
+                  </button>
+                </p>
+              </div>
 
-            <Button type="submit" w="full" size="lg" isLoading={loading} loadingText="Creating account...">
-              Create Account
-            </Button>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating account...' : 'Create Account'}
+                {!loading && <FiArrowRight className="w-4 h-4 ml-2" />}
+              </Button>
+            </form>
 
-            <HStack w="full" justify="center" spacing={1}>
-              <Text fontSize="sm" color="gray.500">Already have an account?</Text>
-              <Link as={RouterLink} to="/login" fontSize="sm" color="brand.500" fontWeight="500">Sign in</Link>
-            </HStack>
-          </VStack>
-        </Box>
-      </Box>
-    </Box>
-  )
+            <div className="mt-6 text-center">
+              <p className="text-foreground-muted">
+                Already have an account?{' '}
+                <button
+                  onClick={() => onNavigate?.('login')}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign in
+                </button>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }
 
-export default Signup
+export default Signup;

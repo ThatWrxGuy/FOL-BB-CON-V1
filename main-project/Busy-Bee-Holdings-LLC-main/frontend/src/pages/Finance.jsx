@@ -1,182 +1,187 @@
-import { useState, useEffect } from 'react'
-import { Box, VStack, HStack, Text, Heading, Button, Card, CardBody, CardHeader, SimpleGrid, Badge, Table, Thead, Tbody, Tr, Th, Td, Stat, StatLabel, StatNumber, StatHelpText, Progress, Spinner, Center, IconButton } from '@chakra-ui/react'
-import { FiPlus, FiTrash2, FiRefreshCw, FiTrendingUp, FiTrendingDown, FiCreditCard } from 'react-icons/fi'
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts'
-import { financeAPI } from '../services/api'
+/**
+ * Busy Bee Finance - Design System Implementation
+ */
 
-const COLORS = ['#F59E0B', '#3B82F6', '#10B981', '#EF4444', '#8B5CF6']
+import { useState, useEffect } from 'react';
+import { FiPlus, FiTrendingUp, FiTrendingDown, FiCreditCard } from 'react-icons/fi';
+import {
+  PageContainer,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Badge,
+  Progress,
+  Grid,
+  StatCard,
+  LoadingOverlay,
+  EmptyState,
+} from '../components';
+
+// Mock data for design demonstration
+const mockFinanceData = {
+  netWorth: 12543.67,
+  netWorthChange: 3.2,
+  totalIncome: 8500,
+  totalSpending: 4230.5,
+  avgDaily: 141.02,
+  netFlow: 4269.5,
+  spendingByCategory: [
+    { category: 'Housing', amount: 1800, percentage: 42, icon: '🏠' },
+    { category: 'Food', amount: 890, percentage: 21, icon: '🍔' },
+    { category: 'Transport', amount: 450, percentage: 11, icon: '🚗' },
+    { category: 'Utilities', amount: 320, percentage: 8, icon: '💡' },
+    { category: 'Entertainment', amount: 270, percentage: 6, icon: '🎬' },
+  ],
+  insights: [
+    'Your spending is 12% lower than last month',
+    'You saved $500 more than average this month',
+    'Housing costs are within recommended 30% range',
+  ],
+  accounts: [
+    { id: 1, name: 'Chase Checking', balance: 4520.0, type: 'checking' },
+    { id: 2, name: 'Chase Savings', balance: 8023.67, type: 'savings' },
+  ],
+  transactions: [
+    { id: 1, date: '2024-01-15', merchant: 'Whole Foods', amount: 156.32, category: 'Food' },
+    { id: 2, date: '2024-01-14', merchant: 'Uber', amount: 24.5, category: 'Transport' },
+    { id: 3, date: '2024-01-13', merchant: 'Netflix', amount: 15.99, category: 'Entertainment' },
+    { id: 4, date: '2024-01-12', merchant: 'Electric Co', amount: 145.0, category: 'Utilities' },
+    { id: 5, date: '2024-01-11', merchant: 'Rent Payment', amount: 1800.0, category: 'Housing' },
+  ],
+};
 
 function Finance() {
-  const [loading, setLoading] = useState(true)
-  const [accounts, setAccounts] = useState([])
-  const [insights, setInsights] = useState(null)
-  const [transactions, setTransactions] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState(mockFinanceData);
 
   useEffect(() => {
-    loadFinance()
-  }, [])
-
-  const loadFinance = async () => {
-    try {
-      const [accountsRes, insightsRes, transRes] = await Promise.all([
-        financeAPI.getAccounts(),
-        financeAPI.getInsights(30),
-        financeAPI.getTransactions({ limit: 10 })
-      ])
-      setAccounts(accountsRes.data.accounts || [])
-      setInsights(insightsRes.data)
-      setTransactions(transactionsRes.data.transactions || [])
-    } catch (err) {
-      console.error('Failed to load finance:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
+    // Simulate loading
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (loading) {
-    return (
-      <Center h="400px">
-        <Spinner size="xl" color="brand.500" />
-      </Center>
-    )
+    return <LoadingOverlay message="Loading finance data..." />;
   }
 
   return (
-    <VStack spacing={6} align="stretch">
-      <HStack justify="space-between">
-        <Heading size="lg">Finance</Heading>
-        <Button leftIcon={<FiPlus />} colorScheme="brand">Link Account</Button>
-      </HStack>
-
-      {/* Net Worth */}
-      <Card bg="linear-gradient(135deg, #F59E0B 0%, #EA580C 100%)" color="white">
-        <CardBody>
-          <HStack justify="space-between">
-            <VStack align="start" spacing={1}>
-              <Text opacity={0.8}>Net Worth</Text>
-              <Text fontSize="4xl" fontWeight="bold">$12,543.67</Text>
-              <HStack>
-                <FiTrendingUp />
-                <Text>+3.2% this month</Text>
-              </HStack>
-            </VStack>
-            <Box p={4} bg="whiteAlpha.200" rounded="xl">
-              <FiCreditCard size={40} />
-            </Box>
-          </HStack>
-        </CardBody>
+    <PageContainer
+      title="Finance"
+      subtitle="Track your income, spending, and net worth"
+      actions={
+        <Button>
+          <FiPlus className="w-4 h-4 mr-2" />
+          Link Account
+        </Button>
+      }
+    >
+      {/* Net Worth Card */}
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-foreground-muted text-sm">Net Worth</p>
+              <p className="text-4xl font-bold text-foreground mt-1">
+                ${data.netWorth.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              </p>
+              <div className="flex items-center gap-1 mt-2 text-success">
+                <FiTrendingUp size={16} />
+                <span className="text-sm font-medium">+{data.netWorthChange}% this month</span>
+              </div>
+            </div>
+            <div className="p-4 rounded-xl bg-primary/10">
+              <FiCreditCard className="w-10 h-10 text-primary" />
+            </div>
+          </div>
+        </CardContent>
       </Card>
 
-      {/* Stats */}
-      <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
-        <Card>
-          <CardBody>
-            <Stat>
-              <StatLabel>Total Income</StatLabel>
-              <StatNumber color="green.500">${insights?.total_income?.toLocaleString() || '0'}</StatNumber>
-            </Stat>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <Stat>
-              <StatLabel>Total Spending</StatLabel>
-              <StatNumber color="red.500">${insights?.total_spending?.toLocaleString() || '0'}</StatNumber>
-            </Stat>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <Stat>
-              <StatLabel>Avg Daily</StatLabel>
-              <StatNumber>${insights?.average_daily_spending?.toFixed(2) || '0'}</StatNumber>
-            </Stat>
-          </CardBody>
-        </Card>
-        <Card>
-          <CardBody>
-            <Stat>
-              <StatLabel>Net Flow</StatLabel>
-              <StatNumber color={insights?.net_flow >= 0 ? 'green.500' : 'red.500'}>
-                ${insights?.net_flow?.toLocaleString() || '0'}
-              </StatNumber>
-            </Stat>
-          </CardBody>
-        </Card>
-      </SimpleGrid>
+      {/* Stats Grid */}
+      <Grid cols={{ default: 2, md: 4 }} className="mb-6">
+        <StatCard
+          label="Total Income"
+          value={`$${data.totalIncome.toLocaleString()}`}
+          icon={FiTrendingUp}
+          className="text-success"
+        />
+        <StatCard
+          label="Total Spending"
+          value={`$${data.totalSpending.toLocaleString()}`}
+          icon={FiTrendingDown}
+          className="text-destructive"
+        />
+        <StatCard label="Avg Daily" value={`$${data.avgDaily.toFixed(2)}`} />
+        <StatCard
+          label="Net Flow"
+          value={`$${data.netFlow.toLocaleString()}`}
+          trend={data.netFlow >= 0 ? 12 : -8}
+        />
+      </Grid>
 
-      {/* Spending by Category */}
-      <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+      {/* Charts and Insights Grid */}
+      <Grid cols={{ default: 1, lg: 2 }} className="mb-6 gap-6">
+        {/* Spending by Category */}
         <Card>
-          <CardHeader>
-            <Heading size="sm">Spending by Category</Heading>
-          </CardHeader>
-          <CardBody>
-            <VStack spacing={3} align="stretch">
-              {insights?.spending_by_category?.map((cat, i) => (
-                <HStack key={cat.category} justify="space-between">
-                  <HStack>
-                    <Text fontSize="xl">{cat.icon}</Text>
-                    <Text fontWeight="500" textTransform="capitalize">{cat.category}</Text>
-                  </HStack>
-                  <VStack align="end" spacing={0}>
-                    <Text fontWeight="600">${cat.amount?.toFixed(2)}</Text>
-                    <Text fontSize="xs" color="gray.500">{cat.percentage}%</Text>
-                  </VStack>
-                </HStack>
-              ))}
-            </VStack>
-          </CardBody>
+          <CardHeader title="Spending by Category" />
+          <CardContent className="space-y-4">
+            {data.spendingByCategory.map((cat) => (
+              <div key={cat.category} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{cat.icon}</span>
+                    <span className="font-medium text-foreground capitalize">{cat.category}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold">${cat.amount.toFixed(2)}</p>
+                    <p className="text-xs text-foreground-muted">{cat.percentage}%</p>
+                  </div>
+                </div>
+                <Progress value={cat.percentage} className="h-2" />
+              </div>
+            ))}
+          </CardContent>
         </Card>
 
+        {/* Insights */}
         <Card>
-          <CardHeader>
-            <Heading size="sm">Insights</Heading>
-          </CardHeader>
-          <CardBody>
-            <VStack spacing={3} align="stretch">
-              {insights?.insights?.map((insight, i) => (
-                <HStack key={i} p={3} bg="brand.50" rounded="lg" spacing={3}>
-                  <Text>{insight}</Text>
-                </HStack>
-              ))}
-            </VStack>
-          </CardBody>
+          <CardHeader title="Insights" />
+          <CardContent className="space-y-3">
+            {data.insights.map((insight, i) => (
+              <div key={i} className="p-3 rounded-lg bg-primary/10 text-foreground text-sm">
+                {insight}
+              </div>
+            ))}
+          </CardContent>
         </Card>
-      </SimpleGrid>
+      </Grid>
 
       {/* Recent Transactions */}
       <Card>
-        <CardHeader>
-          <Heading size="sm">Recent Transactions</Heading>
-        </CardHeader>
-        <CardBody>
-          <Table variant="simple" size="sm">
-            <Thead>
-              <Tr>
-                <Th>Date</Th>
-                <Th>Description</Th>
-                <Th>Category</Th>
-                <Th isNumeric>Amount</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {transactions.map((tx) => (
-                <Tr key={tx.id}>
-                  <Td>{tx.date}</Td>
-                  <Td>{tx.merchant_name || tx.name}</Td>
-                  <Td><Badge>{tx.category}</Badge></Td>
-                  <Td isNumeric color={tx.amount < 0 ? 'red.500' : 'green.500'}>
-                    ${Math.abs(tx.amount).toFixed(2)}
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </CardBody>
+        <CardHeader title="Recent Transactions" />
+        <CardContent className="p-0">
+          <div className="divide-y divide-border">
+            {data.transactions.map((tx) => (
+              <div
+                key={tx.id}
+                className="flex items-center justify-between p-4 hover:bg-secondary/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-foreground-muted text-sm">{tx.date}</div>
+                  <div>
+                    <p className="font-medium text-foreground">{tx.merchant}</p>
+                    <p className="text-sm text-foreground-muted">{tx.category}</p>
+                  </div>
+                </div>
+                <p className="font-semibold text-foreground">${tx.amount.toFixed(2)}</p>
+              </div>
+            ))}
+          </div>
+        </CardContent>
       </Card>
-    </VStack>
-  )
+    </PageContainer>
+  );
 }
 
-export default Finance
+export default Finance;

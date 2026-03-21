@@ -1,117 +1,232 @@
-import { useState, useEffect } from 'react'
-import { Box, VStack, HStack, Text, Heading, Card, CardBody, CardHeader, SimpleGrid, Badge, Button, Input, InputGroup, InputLeftElement, Select, Checkbox, IconButton, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react'
-import { FiPlus, FiSearch, FiFilter, FiMoreVertical, FiEdit2, FiTrash2, FiClock } from 'react-icons/fi'
-import { dashboardAPI } from '../services/api'
+/**
+ * Busy Bee Tasks - Design System Implementation
+ */
 
-function Tasks() {
-  const [tasks, setTasks] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('all')
-  const [search, setSearch] = useState('')
+import { useState, useEffect } from 'react';
+import { FiPlus, FiSearch, FiClock, FiMoreVertical, FiCheck } from 'react-icons/fi';
+import {
+  PageContainer,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Badge,
+  Input,
+  Checkbox,
+  LoadingOverlay,
+  EmptyState,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '../components';
 
-  useEffect(() => {
-    loadTasks()
-  }, [])
+// Mock data
+const mockTasks = [
+  {
+    id: 1,
+    title: 'Review quarterly goals',
+    priority: 'high',
+    due: 'Today',
+    is_completed: false,
+    category: 'Work',
+  },
+  {
+    id: 2,
+    title: 'Schedule health checkup',
+    priority: 'medium',
+    due: 'Tomorrow',
+    is_completed: false,
+    category: 'Health',
+  },
+  {
+    id: 3,
+    title: 'Update budget spreadsheet',
+    priority: 'low',
+    due: 'Fri',
+    is_completed: false,
+    category: 'Finance',
+  },
+  {
+    id: 4,
+    title: 'Meditation session',
+    priority: 'medium',
+    due: 'Daily',
+    is_completed: true,
+    category: 'Mindset',
+  },
+  {
+    id: 5,
+    title: 'Call mom',
+    priority: 'high',
+    due: 'Sun',
+    is_completed: false,
+    category: 'Relationships',
+  },
+  {
+    id: 6,
+    title: 'Grocery shopping',
+    priority: 'low',
+    due: 'Today',
+    is_completed: false,
+    category: 'Habits',
+  },
+];
 
-  const loadTasks = async () => {
-    try {
-      const response = await dashboardAPI.getTasks()
-      setTasks(response.data.tasks || [])
-    } catch (err) {
-      console.error('Failed to load tasks:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
+const PRIORITY_COLORS = {
+  high: 'destructive',
+  medium: 'warning',
+  low: 'success',
+};
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high': return 'red'
-      case 'medium': return 'orange'
-      case 'low': return 'green'
-      default: return 'gray'
-    }
-  }
-
-  const filteredTasks = tasks.filter(t => {
-    if (filter === 'completed' && !t.is_completed) return false
-    if (filter === 'pending' && t.is_completed) return false
-    if (filter !== 'all' && filter !== 'completed' && filter !== 'pending' && t.priority !== filter) return false
-    if (search && !t.title.toLowerCase().includes(search.toLowerCase())) return false
-    return true
-  })
-
+function TaskItem({ task, onToggle }) {
   return (
-    <Box p={6}>
-      <VStack spacing={6} align="stretch">
-        {/* Header */}
-        <HStack justify="space-between">
-          <Heading size="lg">Tasks</Heading>
-          <Button leftIcon={<FiPlus />} colorScheme="brand">New Task</Button>
-        </HStack>
-
-        {/* Filters */}
-        <HStack>
-          <InputGroup maxW="300px">
-            <InputLeftElement><FiSearch /></InputLeftElement>
-            <Input placeholder="Search tasks..." value={search} onChange={(e) => setSearch(e.target.value)} />
-          </InputGroup>
-          <Select maxW="150px" value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="all">All</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="high">High Priority</option>
-            <option value="medium">Medium Priority</option>
-            <option value="low">Low Priority</option>
-          </Select>
-        </HStack>
-
-        {/* Tasks List */}
-        {loading ? (
-          <Text>Loading...</Text>
-        ) : filteredTasks.length === 0 ? (
-          <Card><CardBody textAlign="center" py={12}><Text fontSize="3xl">✅</Text><Text mt={4} color="gray.500">No tasks yet. Create your first task!</Text></CardBody></Card>
-        ) : (
-          <VStack spacing={3} align="stretch">
-            {filteredTasks.map(task => (
-              <Card key={task.id}>
-                <CardBody>
-                  <HStack spacing={4}>
-                    <Checkbox isChecked={task.is_completed} colorScheme="brand" size="lg" />
-                    <VStack align="start" spacing={0} flex={1}>
-                      <Text fontWeight="500" textDecoration={task.is_completed ? 'line-through' : 'none'} color={task.is_completed ? 'gray.400' : 'inherit'}>
-                        {task.title}
-                      </Text>
-                      {task.due_date && <Text fontSize="xs" color="gray.500">Due: {task.due_date}</Text>}
-                    </VStack>
-                    <Badge colorScheme={getPriorityColor(task.priority)} variant="subtle">{task.priority}</Badge>
-                    <Menu>
-                      <MenuButton as={IconButton} icon={<FiMoreVertical />} variant="ghost" size="sm" />
-                      <MenuList>
-                        <MenuItem icon={<FiEdit2 />}>Edit</MenuItem>
-                        <MenuItem icon={task.is_completed ? <FiClock /> : <FiEdit2 />}>
-                          {task.is_completed ? 'Mark Incomplete' : 'Mark Complete'}
-                        </MenuItem>
-                        <MenuItem icon={<FiTrash2 />} color="red.500">Delete</MenuItem>
-                      </MenuList>
-                    </Menu>
-                  </HStack>
-                </CardBody>
-              </Card>
-            ))}
-          </VStack>
-        )}
-
-        {/* Stats */}
-        <SimpleGrid columns={4} spacing={4}>
-          <Card><CardBody textAlign="center"><Text fontSize="2xl" fontWeight="bold">{tasks.length}</Text><Text fontSize="sm" color="gray.500">Total</Text></CardBody></Card>
-          <Card><CardBody textAlign="center"><Text fontSize="2xl" fontWeight="bold" color="green.500">{tasks.filter(t => t.is_completed).length}</Text><Text fontSize="sm" color="gray.500">Completed</Text></CardBody></Card>
-          <Card><CardBody textAlign="center"><Text fontSize="2xl" fontWeight="bold" color="orange.500">{tasks.filter(t => t.priority === 'high' && !t.is_completed).length}</Text><Text fontSize="sm" color="gray.500">High Priority</Text></CardBody></Card>
-          <Card><CardBody textAlign="center"><Text fontSize="2xl" fontWeight="bold">{tasks.filter(t => !t.is_completed).length}</Text><Text fontSize="sm" color="gray.500">Pending</Text></CardBody></Card>
-        </SimpleGrid>
-      </VStack>
-    </Box>
-  )
+    <div className="flex items-center gap-3 p-4 hover:bg-secondary/50 transition-colors border-b border-border last:border-0">
+      <Checkbox
+        checked={task.is_completed}
+        onCheckedChange={() => onToggle(task.id)}
+        className="h-5 w-5"
+      />
+      <div className="flex-1 min-w-0">
+        <p
+          className={`font-medium ${task.is_completed ? 'text-foreground-muted line-through' : 'text-foreground'}`}
+        >
+          {task.title}
+        </p>
+        <div className="flex items-center gap-2 mt-1">
+          <Badge variant="outline" className="text-xs">
+            {task.category}
+          </Badge>
+          <span className="text-xs text-foreground-muted flex items-center gap-1">
+            <FiClock className="w-3 h-3" /> {task.due}
+          </span>
+        </div>
+      </div>
+      <Badge variant={PRIORITY_COLORS[task.priority]}>{task.priority}</Badge>
+      <button className="p-1 hover:bg-secondary rounded">
+        <FiMoreVertical className="w-4 h-4 text-foreground-muted" />
+      </button>
+    </div>
+  );
 }
 
-export default Tasks
+function Tasks() {
+  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState([]);
+  const [filter, setFilter] = useState('all');
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTasks(mockTasks);
+      setLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const toggleTask = (id) => {
+    setTasks(tasks.map((t) => (t.id === id ? { ...t, is_completed: !t.is_completed } : t)));
+  };
+
+  const filteredTasks = tasks.filter((task) => {
+    if (filter === 'completed' && !task.is_completed) return false;
+    if (filter === 'pending' && task.is_completed) return false;
+    if (search && !task.title.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  });
+
+  const stats = {
+    total: tasks.length,
+    pending: tasks.filter((t) => !t.is_completed).length,
+    completed: tasks.filter((t) => t.is_completed).length,
+  };
+
+  if (loading) {
+    return <LoadingOverlay message="Loading tasks..." />;
+  }
+
+  return (
+    <PageContainer
+      title="Tasks"
+      subtitle="Manage your daily tasks and to-dos"
+      actions={
+        <Button>
+          <FiPlus className="w-4 h-4 mr-2" />
+          New Task
+        </Button>
+      }
+    >
+      {/* Stats */}
+      <div className="flex gap-4 mb-6">
+        <Card className="flex-1">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+            <p className="text-sm text-foreground-muted">Total</p>
+          </CardContent>
+        </Card>
+        <Card className="flex-1">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-warning">{stats.pending}</p>
+            <p className="text-sm text-foreground-muted">Pending</p>
+          </CardContent>
+        </Card>
+        <Card className="flex-1">
+          <CardContent className="p-4 text-center">
+            <p className="text-2xl font-bold text-success">{stats.completed}</p>
+            <p className="text-sm text-foreground-muted">Done</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="relative flex-1 max-w-md">
+          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground-muted" />
+          <input
+            type="text"
+            placeholder="Search tasks..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-border bg-card text-foreground placeholder:text-foreground-muted focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </div>
+
+        <Tabs value={filter} onValueChange={setFilter}>
+          <TabsList>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="completed">Completed</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {/* Tasks List */}
+      {filteredTasks.length > 0 ? (
+        <Card>
+          <CardContent className="p-0">
+            {filteredTasks.map((task) => (
+              <TaskItem key={task.id} task={task} onToggle={toggleTask} />
+            ))}
+          </CardContent>
+        </Card>
+      ) : (
+        <EmptyState
+          icon={FiCheck}
+          title="No tasks found"
+          description={
+            search ? 'Try adjusting your search' : 'Create your first task to get started'
+          }
+          action={
+            <Button>
+              <FiPlus className="w-4 h-4 mr-2" />
+              Create Task
+            </Button>
+          }
+        />
+      )}
+    </PageContainer>
+  );
+}
+
+export default Tasks;

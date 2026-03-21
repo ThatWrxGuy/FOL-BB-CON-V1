@@ -3,36 +3,61 @@
  * Demonstrates the clean, professional CRM aesthetic
  */
 
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { cn } from '../lib/utils'
-import { 
-  FiPlus, FiCheck, FiClock, FiTrendingUp, FiTrendingDown, FiArrowRight,
-  FiZap, FiGrid, FiRefreshCw, FiCalendar, FiTarget, FiActivity
-} from 'react-icons/fi'
-import { 
-  Button, Card, CardHeader, CardTitle, CardContent,
-  Badge, Progress, Avatar, AvatarFallback, Skeleton,
-  PageContainer, Section, Grid, StatCard, EmptyState,
-  Tabs, TabsList, TabsTrigger, TabsContent
-} from '../components'
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { cn } from '../lib/utils';
+import {
+  FiPlus,
+  FiCheck,
+  FiClock,
+  FiTrendingUp,
+  FiTrendingDown,
+  FiArrowRight,
+  FiZap,
+  FiGrid,
+  FiRefreshCw,
+  FiCalendar,
+  FiTarget,
+  FiActivity,
+} from 'react-icons/fi';
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Badge,
+  Progress,
+  Avatar,
+  AvatarFallback,
+  Skeleton,
+  PageContainer,
+  Section,
+  Grid,
+  StatCard,
+  EmptyState,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '../components';
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
 const DOMAIN_META = {
-  health:        { color: 'green',  emoji: '🏃', label: 'Health' },
-  career:        { color: 'blue',   emoji: '💼', label: 'Career' },
-  mindset:       { color: 'purple', emoji: '🧠', label: 'Mindset' },
-  habits:        { color: 'orange', emoji: '🔄', label: 'Habits' },
-  relationships: { color: 'pink',   emoji: '👥', label: 'Relationships' },
-  finance:       { color: 'yellow', emoji: '💰', label: 'Finance' },
-}
+  health: { color: 'green', emoji: '🏃', label: 'Health' },
+  career: { color: 'blue', emoji: '💼', label: 'Career' },
+  mindset: { color: 'purple', emoji: '🧠', label: 'Mindset' },
+  habits: { color: 'orange', emoji: '🔄', label: 'Habits' },
+  relationships: { color: 'pink', emoji: '👥', label: 'Relationships' },
+  finance: { color: 'yellow', emoji: '💰', label: 'Finance' },
+};
 
 function greeting(name) {
-  const h = new Date().getHours()
-  const time = h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening'
-  const first = name?.split(' ')[0] || 'there'
-  return `Good ${time}, ${first} 👋`
+  const h = new Date().getHours();
+  const time = h < 12 ? 'morning' : h < 18 ? 'afternoon' : 'evening';
+  const first = name?.split(' ')[0] || 'there';
+  return `Good ${time}, ${first} 👋`;
 }
 
 // ─── Mock Data ───────────────────────────────────────────────────────────────
@@ -42,14 +67,38 @@ const mockStats = [
   { label: 'Completed', value: '18', trend: 8, icon: FiCheck },
   { label: 'In Progress', value: '6', trend: -2, icon: FiClock },
   { label: 'Score', value: '87', trend: 5, icon: FiActivity },
-]
+];
 
 const mockGoals = [
-  { id: 1, title: 'Morning meditation routine', progress: 75, status: 'active', category: 'Mindset' },
-  { id: 2, title: 'Save $10,000 emergency fund', progress: 45, status: 'active', category: 'Finance' },
-  { id: 3, title: 'Run 5K three times per week', progress: 90, status: 'active', category: 'Health' },
-  { id: 4, title: 'Complete professional certification', progress: 30, status: 'paused', category: 'Career' },
-]
+  {
+    id: 1,
+    title: 'Morning meditation routine',
+    progress: 75,
+    status: 'active',
+    category: 'Mindset',
+  },
+  {
+    id: 2,
+    title: 'Save $10,000 emergency fund',
+    progress: 45,
+    status: 'active',
+    category: 'Finance',
+  },
+  {
+    id: 3,
+    title: 'Run 5K three times per week',
+    progress: 90,
+    status: 'active',
+    category: 'Health',
+  },
+  {
+    id: 4,
+    title: 'Complete professional certification',
+    progress: 30,
+    status: 'paused',
+    category: 'Career',
+  },
+];
 
 const mockDomains = [
   { id: 'health', name: 'Health', score: 78 },
@@ -58,14 +107,14 @@ const mockDomains = [
   { id: 'habits', name: 'Habits', score: 65 },
   { id: 'relationships', name: 'Relationships', score: 90 },
   { id: 'finance', name: 'Finance', score: 58 },
-]
+];
 
 const mockTasks = [
   { id: 1, title: 'Review quarterly goals', due: 'Today', priority: 'high' },
   { id: 2, title: 'Schedule health checkup', due: 'Tomorrow', priority: 'medium' },
   { id: 3, title: 'Update budget spreadsheet', due: 'Fri', priority: 'low' },
   { id: 4, title: 'Meditation session', due: 'Daily', priority: 'medium' },
-]
+];
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
@@ -79,11 +128,11 @@ function StatCardNew({ icon: Icon, label, value, trend, loading }) {
           <Skeleton className="h-3 w-24" />
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const isPositive = trend > 0
-  const isNegative = trend < 0
+  const isPositive = trend > 0;
+  const isNegative = trend < 0;
 
   return (
     <Card hover className="cursor-pointer">
@@ -93,10 +142,16 @@ function StatCardNew({ icon: Icon, label, value, trend, loading }) {
             <Icon className="w-5 h-5 text-primary" />
           </div>
           {trend != null && (
-            <span className={cn(
-              "flex items-center gap-1 text-sm font-medium",
-              isPositive ? "text-success" : isNegative ? "text-destructive" : "text-foreground-muted"
-            )}>
+            <span
+              className={cn(
+                'flex items-center gap-1 text-sm font-medium',
+                isPositive
+                  ? 'text-success'
+                  : isNegative
+                    ? 'text-destructive'
+                    : 'text-foreground-muted'
+              )}
+            >
               {isPositive && <FiTrendingUp size={14} />}
               {isNegative && <FiTrendingDown size={14} />}
               {Math.abs(trend)}%
@@ -107,7 +162,7 @@ function StatCardNew({ icon: Icon, label, value, trend, loading }) {
         <p className="text-sm text-foreground-muted mt-1">{label}</p>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function GoalCard({ goal }) {
@@ -115,7 +170,7 @@ function GoalCard({ goal }) {
     active: 'success',
     completed: 'info',
     paused: 'secondary',
-  }
+  };
 
   return (
     <Card hover className="cursor-pointer">
@@ -127,16 +182,18 @@ function GoalCard({ goal }) {
         <Progress value={goal.progress} className="h-2 mb-3" />
         <div className="flex items-center justify-between">
           <span className="text-sm text-foreground-muted">{goal.progress}% complete</span>
-          <Badge variant="outline" className="text-xs">{goal.category}</Badge>
+          <Badge variant="outline" className="text-xs">
+            {goal.category}
+          </Badge>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function DomainCard({ domain }) {
-  const meta = DOMAIN_META[domain.id] || { emoji: '📊', label: domain.name }
-  
+  const meta = DOMAIN_META[domain.id] || { emoji: '📊', label: domain.name };
+
   return (
     <Card hover className="cursor-pointer">
       <CardContent className="p-4">
@@ -151,7 +208,7 @@ function DomainCard({ domain }) {
         <Progress value={domain.score} className="h-1.5" />
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function TaskItem({ task }) {
@@ -159,25 +216,27 @@ function TaskItem({ task }) {
     high: 'destructive',
     medium: 'warning',
     low: 'secondary',
-  }
+  };
 
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors">
-      <div className={cn(
-        "w-2 h-2 rounded-full",
-        task.priority === 'high' && "bg-destructive",
-        task.priority === 'medium' && "bg-warning",
-        task.priority === 'low' && "bg-foreground-muted"
-      )} />
+      <div
+        className={cn(
+          'w-2 h-2 rounded-full',
+          task.priority === 'high' && 'bg-destructive',
+          task.priority === 'medium' && 'bg-warning',
+          task.priority === 'low' && 'bg-foreground-muted'
+        )}
+      />
       <span className="flex-1 text-sm text-foreground">{task.title}</span>
       <span className="text-xs text-foreground-muted">{task.due}</span>
     </div>
-  )
+  );
 }
 
 function QuickAction({ icon: Icon, label, to }) {
   return (
-    <Link 
+    <Link
       to={to}
       className="flex flex-col items-center gap-2 p-4 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors cursor-pointer"
     >
@@ -186,23 +245,23 @@ function QuickAction({ icon: Icon, label, to }) {
       </div>
       <span className="text-sm font-medium text-foreground">{label}</span>
     </Link>
-  )
+  );
 }
 
 // ─── Main Dashboard ─────────────────────────────────────────────────────────
 
 function Dashboard() {
-  const { user } = { user: { full_name: 'John Doe', email: 'john@example.com' } } // Mock auth
-  const [loading, setLoading] = useState(true)
+  const { user } = { user: { full_name: 'John Doe', email: 'john@example.com' } }; // Mock auth
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Simulate loading
-    const timer = setTimeout(() => setLoading(false), 1000)
-    return () => clearTimeout(timer)
-  }, [])
+    const timer = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <PageContainer 
+    <PageContainer
       title={greeting(user?.full_name)}
       subtitle="Here's what's happening with your life domains today."
       actions={
@@ -221,11 +280,7 @@ function Dashboard() {
       {/* Stats Grid */}
       <Grid cols={{ default: 1, sm: 2, lg: 4 }} className="mb-6">
         {mockStats.map((stat, index) => (
-          <StatCardNew 
-            key={index}
-            {...stat}
-            loading={loading}
-          />
+          <StatCardNew key={index} {...stat} loading={loading} />
         ))}
       </Grid>
 
@@ -234,10 +289,13 @@ function Dashboard() {
         {/* Left Column - Goals */}
         <div className="lg:col-span-2 space-y-6">
           <Card>
-            <CardHeader 
-              title="Active Goals" 
+            <CardHeader
+              title="Active Goals"
               action={
-                <Link to="/goals" className="text-sm text-primary hover:underline flex items-center gap-1">
+                <Link
+                  to="/goals"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
+                >
                   View all <FiArrowRight size={14} />
                 </Link>
               }
@@ -249,9 +307,7 @@ function Dashboard() {
                   <Skeleton className="h-24 w-full" />
                 </>
               ) : (
-                mockGoals.map(goal => (
-                  <GoalCard key={goal.id} goal={goal} />
-                ))
+                mockGoals.map((goal) => <GoalCard key={goal.id} goal={goal} />)
               )}
             </CardContent>
           </Card>
@@ -272,10 +328,13 @@ function Dashboard() {
         {/* Right Column - Domains & Tasks */}
         <div className="space-y-6">
           <Card>
-            <CardHeader 
-              title="Life Domains" 
+            <CardHeader
+              title="Life Domains"
               action={
-                <Link to="/domains" className="text-sm text-primary hover:underline flex items-center gap-1">
+                <Link
+                  to="/domains"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
+                >
                   View all <FiArrowRight size={14} />
                 </Link>
               }
@@ -287,18 +346,21 @@ function Dashboard() {
                   <Skeleton className="h-20 w-full" />
                 </>
               ) : (
-                mockDomains.slice(0, 4).map(domain => (
-                  <DomainCard key={domain.id} domain={domain} />
-                ))
+                mockDomains
+                  .slice(0, 4)
+                  .map((domain) => <DomainCard key={domain.id} domain={domain} />)
               )}
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader 
-              title="Upcoming Tasks" 
+            <CardHeader
+              title="Upcoming Tasks"
               action={
-                <Link to="/tasks" className="text-sm text-primary hover:underline flex items-center gap-1">
+                <Link
+                  to="/tasks"
+                  className="text-sm text-primary hover:underline flex items-center gap-1"
+                >
                   View all <FiArrowRight size={14} />
                 </Link>
               }
@@ -310,16 +372,14 @@ function Dashboard() {
                   <Skeleton className="h-10 w-full" />
                 </>
               ) : (
-                mockTasks.map(task => (
-                  <TaskItem key={task.id} task={task} />
-                ))
+                mockTasks.map((task) => <TaskItem key={task.id} task={task} />)
               )}
             </CardContent>
           </Card>
         </div>
       </div>
     </PageContainer>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;
