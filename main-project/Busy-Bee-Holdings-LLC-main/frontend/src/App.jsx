@@ -1,5 +1,4 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { Box, Spinner, Center } from '@chakra-ui/react'
 import { useAuth } from './context/AuthContext'
 
 // Pages
@@ -24,18 +23,17 @@ import ExecutiveBrief from './pages/ExecutiveBrief'
 import TreeOfLife from './pages/TreeOfLife'
 import Metatron from './pages/Metatron'
 
-// Layout
-import Layout from './components/Layout'
+// Design System Layout
+import { Layout } from './components'
+
+// Design System Loading State
+import { Spinner, LoadingOverlay } from './components'
 
 function ProtectedRoute({ children, requireAdmin = false }) {
   const { isAuthenticated, loading, user } = useAuth()
 
   if (loading) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" color="brand.500" />
-      </Center>
-    )
+    return <LoadingOverlay message="Loading..." />
   }
 
   if (!isAuthenticated) {
@@ -53,160 +51,154 @@ function App() {
   const { loading } = useAuth()
 
   if (loading) {
-    return (
-      <Center h="100vh">
-        <Spinner size="xl" color="brand.500" />
-      </Center>
-    )
+    return <LoadingOverlay fullScreen message="Loading Busy Bee..." />
   }
 
   return (
-    <Box minH="100vh">
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/demo" element={<Demo />} />
-        <Route path="/onboarding" element={<Onboarding />} />
-        
-        {/* Protected routes */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route 
-            path="dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="finance" 
-            element={
-              <ProtectedRoute>
-                <Finance />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="settings" 
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } 
-          />
-          {/* Admin routes - protected, not shown in sidebar */}
-          <Route 
-            path="admin" 
-            element={
-              <ProtectedRoute requireAdmin>
-                <Admin />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="analytics" 
-            element={
-              <ProtectedRoute requireAdmin>
-                <Analytics />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="my-analytics" 
-            element={
-              <ProtectedRoute>
-                <UserAnalytics />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="domains" 
-            element={
-              <ProtectedRoute>
-                <Domains />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="briefs" 
-            element={
-              <ProtectedRoute>
-                <ExecutiveBrief />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="tree" 
-            element={
-              <ProtectedRoute>
-                <TreeOfLife />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="metatron" 
-            element={
-              <ProtectedRoute>
-                <Metatron />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="goals" 
-            element={
-              <ProtectedRoute>
-                <Goals />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="tasks" 
-            element={
-              <ProtectedRoute>
-                <Tasks />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="notifications" 
-            element={
-              <ProtectedRoute>
-                <Notifications />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="subscription" 
-            element={
-              <ProtectedRoute>
-                <Subscription />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="help" 
-            element={
-              <ProtectedRoute>
-                <Help />
-              </ProtectedRoute>
-            } 
-          />
-        </Route>
+    <Routes>
+      {/* Public routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/demo" element={<Demo />} />
+      <Route path="/onboarding" element={<Onboarding />} />
+      
+      {/* Protected routes with Design System Layout */}
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route 
+          path="dashboard" 
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="finance" 
+          element={
+            <ProtectedRoute>
+              <Finance />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="profile" 
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="settings" 
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } 
+        />
+        {/* Admin routes - protected, not shown in sidebar */}
+        <Route 
+          path="admin" 
+          element={
+            <ProtectedRoute requireAdmin>
+              <Admin />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="analytics" 
+          element={
+            <ProtectedRoute requireAdmin>
+              <Analytics />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="my-analytics" 
+          element={
+            <ProtectedRoute>
+              <UserAnalytics />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="domains" 
+          element={
+            <ProtectedRoute>
+              <Domains />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="briefs" 
+          element={
+            <ProtectedRoute>
+              <ExecutiveBrief />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="tree" 
+          element={
+            <ProtectedRoute>
+              <TreeOfLife />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="metatron" 
+          element={
+            <ProtectedRoute>
+              <Metatron />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="goals" 
+          element={
+            <ProtectedRoute>
+              <Goals />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="tasks" 
+          element={
+            <ProtectedRoute>
+              <Tasks />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="notifications" 
+          element={
+            <ProtectedRoute>
+              <Notifications />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="subscription" 
+          element={
+            <ProtectedRoute>
+              <Subscription />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="help" 
+          element={
+            <ProtectedRoute>
+              <Help />
+            </ProtectedRoute>
+          } 
+        />
+      </Route>
 
-        {/* Catch all */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </Box>
+      {/* Catch all */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   )
 }
 

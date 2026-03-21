@@ -337,7 +337,6 @@ export {
   Toast,
   Spinner,
   LoadingOverlay,
-  Skeleton,
   SkeletonCard,
   Separator,
   ScrollArea,

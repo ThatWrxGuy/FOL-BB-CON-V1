@@ -332,7 +332,5 @@ export {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuGroup,
-  Badge,
-  badgeVariants,
   AvatarGroup
 }

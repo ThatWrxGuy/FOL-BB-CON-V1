@@ -1,9 +1,23 @@
-import { cn } from '../lib/utils'
+import { cn } from '../../lib/utils'
 
 /**
  * Page Container
  * Provides consistent page structure across all pages
  */
+
+// Safe max-width mapping for Tailwind
+const MAX_WIDTH_MAP = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+  "2xl": "max-w-2xl",
+  "4xl": "max-w-4xl",
+  "5xl": "max-w-5xl",
+  "6xl": "max-w-6xl",
+  "7xl": "max-w-7xl",
+}
+
 function PageContainer({ 
   children, 
   className,
@@ -13,7 +27,7 @@ function PageContainer({
   maxWidth = '7xl'
 }) {
   return (
-    <div className={cn("mx-auto w-full", maxWidth && `max-w-${maxWidth}`, className)}>
+    <div className={cn("mx-auto w-full", MAX_WIDTH_MAP[maxWidth], className)}>
       {/* Page Header */}
       {(title || actions) && (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -237,8 +251,6 @@ function EmptyState({
 export { 
   PageContainer, 
   Section, 
-  Card, 
-  CardHeader,
   Grid, 
   StatCard, 
   EmptyState 
