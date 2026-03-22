@@ -23,6 +23,8 @@ import {
   FiChevronRight,
   FiCommand,
   FiX,
+  FiActivity,
+  FiBriefcase,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 
@@ -85,6 +87,8 @@ function Sidebar({ onClose, isCollapsed, onToggle, isMobile = false }) {
       items: [
         { to: '/my-analytics', icon: FiTrendingUp, label: 'My Analytics' },
         { to: '/finance', icon: FiDollarSign, label: 'Finance' },
+        { to: '/health', icon: FiActivity, label: 'Health' },
+        { to: '/career', icon: FiBriefcase, label: 'Career' },
       ],
     },
     {

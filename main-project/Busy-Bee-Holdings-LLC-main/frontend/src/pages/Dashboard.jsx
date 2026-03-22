@@ -19,6 +19,7 @@ import {
   FiCalendar,
   FiTarget,
   FiActivity,
+  FiBriefcase,
 } from 'react-icons/fi';
 import {
   Button,
@@ -51,6 +52,9 @@ const DOMAIN_META = {
   habits: { color: 'orange', emoji: '🔄', label: 'Habits' },
   relationships: { color: 'pink', emoji: '👥', label: 'Relationships' },
   finance: { color: 'yellow', emoji: '💰', label: 'Finance' },
+  education: { color: 'cyan', emoji: '📚', label: 'Education' },
+  family: { color: 'orange', emoji: '🏠', label: 'Family' },
+  spirituality: { color: 'purple', emoji: '✨', label: 'Spirituality' },
 };
 
 function greeting(name) {
@@ -60,7 +64,9 @@ function greeting(name) {
   return `Good ${time}, ${first} 👋`;
 }
 
-// ─── Mock Data ───────────────────────────────────────────────────────────────
+// ─── Mock Data - EXAMPLES ONLY for users to reference ───────────────────────────
+// In production, this would be empty or fetched from user's personal data
+// These examples show the types of data users would see when they have goals/tasks/domains
 
 const mockStats = [
   { label: 'Total Goals', value: '24', trend: 12, icon: FiTarget },
@@ -107,6 +113,9 @@ const mockDomains = [
   { id: 'habits', name: 'Habits', score: 65 },
   { id: 'relationships', name: 'Relationships', score: 90 },
   { id: 'finance', name: 'Finance', score: 58 },
+  { id: 'education', name: 'Education', score: 70 },
+  { id: 'family', name: 'Family', score: 88 },
+  { id: 'spirituality', name: 'Spirituality', score: 55 },
 ];
 
 const mockTasks = [
@@ -315,11 +324,13 @@ function Dashboard() {
           <Card>
             <CardHeader title="Quick Actions" />
             <CardContent>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-6 gap-4">
                 <QuickAction icon={FiTarget} label="New Goal" to="/goals" />
                 <QuickAction icon={FiCheck} label="Add Task" to="/tasks" />
                 <QuickAction icon={FiGrid} label="Domains" to="/domains" />
                 <QuickAction icon={FiZap} label="Brief" to="/briefs" />
+                <QuickAction icon={FiActivity} label="Health" to="/health" />
+                <QuickAction icon={FiBriefcase} label="Career" to="/career" />
               </div>
             </CardContent>
           </Card>
@@ -347,7 +358,7 @@ function Dashboard() {
                 </>
               ) : (
                 mockDomains
-                  .slice(0, 4)
+                  .slice(0, 6)
                   .map((domain) => <DomainCard key={domain.id} domain={domain} />)
               )}
             </CardContent>

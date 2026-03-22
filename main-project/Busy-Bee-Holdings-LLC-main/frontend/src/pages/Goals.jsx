@@ -39,7 +39,21 @@ const STATUS_COLORS = {
   paused: 'secondary',
 };
 
-// Mock data
+// Mock data - EXAMPLES ONLY for users to reference when creating their own goals/tasks
+// In production, this would be empty or fetched from user's personal data
+// These examples show the types of goals users might create for each domain
+
+// Example goals by domain:
+// - Health: "Run 5K three times per week", "Sleep 8 hours daily", "Morning meditation"
+// - Career: "Complete professional certification", "Learn new framework", "Network with 5 professionals"
+// - Finance: "Save $10,000 emergency fund", "Invest 10% of income"
+// - Mindset: "Morning meditation routine", "Read 24 books this year"
+// - Relationships: "Weekly family game night", "Call mom regularly"
+// - Habits: "Morning routine", "Evening wind-down"
+// - Education: "Complete online course", "Learn new language"
+// - Family: "Weekly family dinner", "Plan family vacation"
+// - Spirituality: "Daily gratitude journal", "Volunteer monthly"
+
 const mockGoals = [
   {
     id: 1,

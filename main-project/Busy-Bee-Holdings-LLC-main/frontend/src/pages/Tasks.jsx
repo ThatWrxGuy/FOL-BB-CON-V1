@@ -22,7 +22,21 @@ import {
   TabsContent,
 } from '../components';
 
-// Mock data
+// Mock data - EXAMPLES ONLY for users to reference when creating their own tasks
+// In production, this would be empty or fetched from user's personal data
+// These examples show the types of tasks users might create for each domain
+
+// Example tasks by domain:
+// - Health: "Schedule health checkup", "Buy vitamins", "Book yoga class"
+// - Career: "Update LinkedIn", "Send follow-up email", "Prepare for interview"
+// - Finance: "Update budget spreadsheet", "Review investments", "Pay bills"
+// - Mindset: "Meditation session", "Journaling", "Read 30 minutes"
+// - Relationships: "Call mom", "Plan date night", "Send birthday card"
+// - Habits: "Morning workout", "Evening wind-down", "Meal prep"
+// - Education: "Complete course module", "Practice coding", "Read documentation"
+// - Family: "Grocery shopping", "Plan weekend activity", "Family dinner"
+// - Spirituality: "Gratitude journal", "Meditate", "Volunteer"
+
 const mockTasks = [
   {
     id: 1,

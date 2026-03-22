@@ -18,12 +18,20 @@ import {
   EmptyState,
 } from '../components';
 
+// ─── Mock Data - EXAMPLES ONLY for users to reference ───────────────────────────
+// In production, this would be empty or fetched from user's personal data
+// These are the core life domains users can customize and add goals to
+
 const DOMAINS = [
   { id: 1, name: 'Health', emoji: '🏃', color: '#10B981', goals: 5, completed: 2 },
   { id: 2, name: 'Career', emoji: '💼', color: '#3B82F6', goals: 3, completed: 1 },
   { id: 3, name: 'Mindset', emoji: '🧠', color: '#8B5CF6', goals: 4, completed: 3 },
   { id: 4, name: 'Habits', emoji: '🔄', color: '#F59E0B', goals: 6, completed: 4 },
   { id: 5, name: 'Finance', emoji: '💰', color: '#EF4444', goals: 2, completed: 0 },
+  { id: 6, name: 'Relationships', emoji: '👥', color: '#EC4899', goals: 4, completed: 2 },
+  { id: 7, name: 'Education', emoji: '📚', color: '#06B6D4', goals: 3, completed: 1 },
+  { id: 8, name: 'Family', emoji: '🏠', color: '#F97316', goals: 3, completed: 2 },
+  { id: 9, name: 'Spirituality', emoji: '✨', color: '#A855F7', goals: 2, completed: 1 },
 ];
 
 function DomainCard({ domain }) {

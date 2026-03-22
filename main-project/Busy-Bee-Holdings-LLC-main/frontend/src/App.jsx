@@ -23,6 +23,8 @@ const Domains = lazy(() => import('./pages/Domains'));
 const ExecutiveBrief = lazy(() => import('./pages/ExecutiveBrief'));
 const TreeOfLife = lazy(() => import('./pages/TreeOfLife'));
 const Metatron = lazy(() => import('./pages/Metatron'));
+const Health = lazy(() => import('./pages/Health'));
+const Career = lazy(() => import('./pages/Career'));
 
 // Design System Layout
 import { Layout } from './components';
@@ -202,6 +204,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Help />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="health"
+            element={
+              <ProtectedRoute>
+                <Health />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="career"
+            element={
+              <ProtectedRoute>
+                <Career />
               </ProtectedRoute>
             }
           />
