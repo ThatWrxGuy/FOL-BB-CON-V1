@@ -119,12 +119,11 @@ export const getPointHistory = async (userId, limit = 10) => {
   return { data, error };
 };
 
-// Goals helpers
-export const getGoals = async (userId) => {
+// Goals helpers - RLS handles user filtering automatically
+export const getGoals = async () => {
   const { data, error } = await supabase
     .from('goals')
     .select('*')
-    .eq('user_id', userId)
     .order('created_at', { ascending: false });
   return { data, error };
 };
@@ -166,12 +165,11 @@ export const deleteGoal = async (goalId) => {
   return { error };
 };
 
-// Habits helpers
-export const getHabits = async (userId) => {
+// Habits helpers - RLS handles user filtering automatically
+export const getHabits = async () => {
   const { data, error } = await supabase
     .from('habits')
     .select('*')
-    .eq('user_id', userId)
     .order('created_at', { ascending: false });
   return { data, error };
 };

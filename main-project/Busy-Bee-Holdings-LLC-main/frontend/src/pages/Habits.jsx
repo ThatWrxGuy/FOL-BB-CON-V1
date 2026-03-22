@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiTrendingUp, FiTrendingDown, FiRepeat, FiCheck, FiClock, FiTarget, FiZap, FiCalendar, FiAward } from 'react-icons/fi';
+import { FiPlus, FiTrendingUp, FiTrendingDown, FiRepeat, FiCheck, FiClock, FiTarget, FiZap, FiCalendar, FiAward, FiTrash2 } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -21,7 +21,11 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
+  LoadingOverlay,
+  EmptyState,
 } from '../components';
+import { getHabits, createHabit, completeHabit, deleteHabit } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
@@ -31,68 +35,28 @@ const HABITS_METRICS = {
   label: 'Habits',
 };
 
-// ─── Mock Data - EXAMPLES ONLY for users to reference ───────────────────────────
-// In production, this would be empty or fetched from user's personal data
-// These examples show the types of habit goals users might create
+const DOMAIN_META = {
+  health: { emoji: '🏃', label: 'Health' },
+  career: { emoji: '💼', label: 'Career' },
+  mindset: { emoji: '🧠', label: 'Mindset' },
+  habits: { emoji: '🔄', label: 'Habits' },
+  relationships: { emoji: '👥', label: 'Relationships' },
+  finance: { emoji: '💰', label: 'Finance' },
+  education: { emoji: '📚', label: 'Education' },
+  spirituality: { emoji: '✨', label: 'Spirituality' },
+  family: { emoji: '👨‍👩‍👧', label: 'Family' },
+  recreation: { emoji: '🎮', label: 'Recreation' },
+  travel: { emoji: '✈️', label: 'Travel' },
+};
 
-const mockStats = [
-  { label: 'Overall Score', value: '65', trend: 5, icon: FiRepeat },
-  { label: 'Active Habits', value: '8', trend: 2, icon: FiCheck },
-  { label: 'Current Streak', value: '14', trend: 3, icon: FiZap },
-  { label: 'Best Streak', value: '28', trend: 0, icon: FiAward },
+const defaultStats = [
+  { label: 'Overall Score', value: '0', trend: 0, icon: FiRepeat },
+  { label: 'Active Habits', value: '0', trend: 0, icon: FiCheck },
+  { label: 'Current Streak', value: '0', trend: 0, icon: FiZap },
+  { label: 'Best Streak', value: '0', trend: 0, icon: FiAward },
 ];
 
-const mockHabits = [
-  { id: 1, name: 'Morning workout', streak: 14, completed: true, frequency: 'Daily', category: 'Health' },
-  { id: 2, name: 'Read 30 minutes', streak: 8, completed: true, frequency: 'Daily', category: 'Learning' },
-  { id: 3, name: 'Drink 8 glasses of water', streak: 21, completed: true, frequency: 'Daily', category: 'Health' },
-  { id: 4, name: 'Meditation', streak: 5, completed: false, frequency: 'Daily', category: 'Wellness' },
-  { id: 5, name: 'No social media before noon', streak: 12, completed: true, frequency: 'Daily', category: 'Productivity' },
-  { id: 6, name: 'Weekly meal prep', streak: 4, completed: false, frequency: 'Weekly', category: 'Health' },
-  { id: 7, name: 'Journaling', streak: 0, completed: false, frequency: 'Daily', category: 'Wellness' },
-  { id: 8, name: 'Go to bed by 10pm', streak: 3, completed: true, frequency: 'Daily', category: 'Health' },
-];
-
-const mockWeeklyActivity = [
-  { day: 'Mon', habits: 6 },
-  { day: 'Tue', habits: 7 },
-  { day: 'Wed', habits: 5 },
-  { day: 'Thu', habits: 8 },
-  { day: 'Fri', habits: 6 },
-  { day: 'Sat', habits: 4 },
-  { day: 'Sun', habits: 3 },
-];
-
-const mockGoals = [
-  { id: 1, title: 'Build consistent morning routine', progress: 70, status: 'active', target: '14/21 days' },
-  { id: 2, title: 'Reduce screen time', progress: 45, status: 'active', target: '3/5 days avg' },
-  { id: 3, title: 'Develop reading habit', progress: 85, status: 'active', target: '21/25 days' },
-  { id: 4, title: 'Habit stacking with coffee', progress: 100, status: 'completed', target: 'Done' },
-];
-
-const mockRoutines = [
-  { 
-    id: 1, 
-    name: 'Morning Routine', 
-    habits: ['Wake up at 6am', 'Drink water', 'Exercise', 'Meditation', 'Breakfast'],
-    time: '6:00 AM - 8:00 AM',
-    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
-  },
-  { 
-    id: 2, 
-    name: 'Evening Routine', 
-    habits: ['No screens after 9pm', 'Read', 'Journal', 'Sleep by 10pm'],
-    time: '9:00 PM - 10:00 PM',
-    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  },
-];
-
-const mockInsights = [
-  { label: 'Best day', value: 'Thursday', icon: FiAward },
-  { label: 'Completion rate', value: '78%', icon: FiCheck },
-  { label: 'Most consistent', value: 'Water intake', icon: FiZap },
-  { label: 'Needs work', value: 'Journaling', icon: FiClock },
-];
+const defaultHabits = [];
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
@@ -281,22 +245,63 @@ function ActivityBar({ day, habits }) {
 // ─── Main Habits Dashboard ───────────────────────────────────────────────────
 
 function Habits() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [habits, setHabits] = useState([]);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setHabits(mockHabits);
-      setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (user) {
+      fetchHabits();
+    }
+  }, [user]);
 
-  const toggleHabit = (id) => {
-    setHabits(habits.map(h => 
-      h.id === id ? { ...h, completed: !h.completed } : h
-    ));
+  const fetchHabits = async () => {
+    setLoading(true);
+    const { data, error } = await getHabits();
+    if (data) {
+      setHabits(data);
+    }
+    setLoading(false);
   };
+
+  const handleCreateHabit = async (newHabit) => {
+    const { data, error } = await createHabit({
+      ...newHabit,
+      user_id: user.id,
+      domain: newHabit.domain || 'health',
+      frequency: newHabit.frequency || 'daily',
+      streak: 0,
+      best_streak: 0,
+      completed_today: false,
+    });
+    if (data) {
+      setHabits([data, ...habits]);
+      setShowAddModal(false);
+    }
+  };
+
+  const handleCompleteHabit = async (habitId) => {
+    const { data, error } = await completeHabit(habitId);
+    if (data) {
+      setHabits(habits.map(h => h.id === habitId ? data : h));
+    }
+  };
+
+  const handleDeleteHabit = async (habitId) => {
+    const { error } = await deleteHabit(habitId);
+    if (!error) {
+      setHabits(habits.filter(h => h.id !== habitId));
+    }
+  };
+
+  // Calculate stats from habits
+  const stats = [
+    { label: 'Overall Score', value: habits.length > 0 ? Math.round((habits.filter(h => h.completed_today).length / habits.length) * 100) : 0, trend: 0, icon: FiRepeat },
+    { label: 'Active Habits', value: habits.length, trend: 0, icon: FiCheck },
+    { label: 'Current Streak', value: habits.length > 0 ? Math.max(...habits.map(h => h.streak || 0), 0) : 0, trend: 0, icon: FiZap },
+    { label: 'Best Streak', value: habits.length > 0 ? Math.max(...habits.map(h => h.best_streak || 0), 0) : 0, trend: 0, icon: FiAward },
+  ];
 
   return (
     <PageContainer
@@ -308,7 +313,7 @@ function Habits() {
             <FiRepeat className="w-4 h-4 mr-2" />
             Log Habits
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={() => setShowAddModal(true)}>
             <FiPlus className="w-4 h-4 mr-2" />
             New Habit
           </Button>
@@ -317,7 +322,7 @@ function Habits() {
     >
       {/* Stats Grid */}
       <Grid cols={{ default: 1, sm: 2, lg: 4 }} className="mb-6">
-        {mockStats.map((stat, index) => (
+        {stats.map((stat, index) => (
           <StatCardNew key={index} {...stat} loading={loading} />
         ))}
       </Grid>

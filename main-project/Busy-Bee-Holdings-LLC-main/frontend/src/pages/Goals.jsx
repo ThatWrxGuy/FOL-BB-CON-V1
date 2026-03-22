@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { FiPlus, FiSearch, FiTarget, FiCheck, FiClock, FiMoreVertical } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiTarget, FiCheck, FiClock, FiMoreVertical, FiTrash2, FiEdit2 } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -22,6 +22,8 @@ import {
   TabsTrigger,
   TabsContent,
 } from '../components';
+import { getGoals, createGoal, updateGoal, deleteGoal, completeGoal } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 // Constants
 const DOMAIN_META = {
@@ -31,82 +33,28 @@ const DOMAIN_META = {
   habits: { emoji: '🔄', label: 'Habits' },
   relationships: { emoji: '👥', label: 'Relationships' },
   finance: { emoji: '💰', label: 'Finance' },
+  education: { emoji: '📚', label: 'Education' },
+  spirituality: { emoji: '✨', label: 'Spirituality' },
+  family: { emoji: '👨‍👩‍👧', label: 'Family' },
+  recreation: { emoji: '🎮', label: 'Recreation' },
+  travel: { emoji: '✈️', label: 'Travel' },
 };
 
 const STATUS_COLORS = {
   active: 'success',
   completed: 'info',
   paused: 'secondary',
+  abandoned: 'secondary',
 };
 
-// Mock data - EXAMPLES ONLY for users to reference when creating their own goals/tasks
-// In production, this would be empty or fetched from user's personal data
-// These examples show the types of goals users might create for each domain
+// Default empty goals for new users
+const defaultGoals = [];
 
-// Example goals by domain:
-// - Health: "Run 5K three times per week", "Sleep 8 hours daily", "Morning meditation"
-// - Career: "Complete professional certification", "Learn new framework", "Network with 5 professionals"
-// - Finance: "Save $10,000 emergency fund", "Invest 10% of income"
-// - Mindset: "Morning meditation routine", "Read 24 books this year"
-// - Relationships: "Weekly family game night", "Call mom regularly"
-// - Habits: "Morning routine", "Evening wind-down"
-// - Education: "Complete online course", "Learn new language"
-// - Family: "Weekly family dinner", "Plan family vacation"
-// - Spirituality: "Daily gratitude journal", "Volunteer monthly"
-
-const mockGoals = [
-  {
-    id: 1,
-    title: 'Run 5K three times per week',
-    progress: 75,
-    status: 'active',
-    category: 'Health',
-    domain: 'health',
-  },
-  {
-    id: 2,
-    title: 'Save $10,000 emergency fund',
-    progress: 45,
-    status: 'active',
-    category: 'Finance',
-    domain: 'finance',
-  },
-  {
-    id: 3,
-    title: 'Morning meditation routine',
-    progress: 90,
-    status: 'active',
-    category: 'Mindset',
-    domain: 'mindset',
-  },
-  {
-    id: 4,
-    title: 'Complete professional certification',
-    progress: 30,
-    status: 'paused',
-    category: 'Career',
-    domain: 'career',
-  },
-  {
-    id: 5,
-    title: 'Read 24 books this year',
-    progress: 60,
-    status: 'active',
-    category: 'Learning',
-    domain: 'mindset',
-  },
-  {
-    id: 6,
-    title: 'Weekly family game night',
-    progress: 100,
-    status: 'completed',
-    category: 'Relationships',
-    domain: 'relationships',
-  },
-];
-
-function GoalCard({ goal, onClick }) {
-  const domain = DOMAIN_META[goal.domain] || { emoji: '🎯', label: goal.category };
+function GoalCard({ goal, onClick, onComplete, onDelete }) {
+  const domain = DOMAIN_META[goal.domain] || { emoji: '🎯', label: goal.domain };
+  const progress = goal.target_value > 0 
+    ? Math.round((goal.current_value / goal.target_value) * 100) 
+    : 0;
 
   return (
     <Card hover className="cursor-pointer" onClick={onClick}>
@@ -119,16 +67,35 @@ function GoalCard({ goal, onClick }) {
               <p className="text-xs text-foreground-muted">{domain.label}</p>
             </div>
           </div>
-          <button className="p-1 hover:bg-secondary rounded">
-            <FiMoreVertical className="w-4 h-4 text-foreground-muted" />
-          </button>
+          <div className="flex items-center gap-1">
+            {goal.status !== 'completed' && (
+              <button 
+                className="p-1 hover:bg-secondary rounded text-success"
+                onClick={(e) => { e.stopPropagation(); onComplete?.(goal.id); }}
+                title="Mark complete"
+              >
+                <FiCheck className="w-4 h-4" />
+              </button>
+            )}
+            <button 
+              className="p-1 hover:bg-secondary rounded text-destructive"
+              onClick={(e) => { e.stopPropagation(); onDelete?.(goal.id); }}
+              title="Delete goal"
+            >
+              <FiTrash2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        <Progress value={goal.progress} className="h-2 mb-3" />
+        <Progress value={progress} className="h-2 mb-3" />
 
         <div className="flex items-center justify-between">
-          <Badge variant={STATUS_COLORS[goal.status]}>{goal.status}</Badge>
-          <span className="text-sm text-foreground-muted">{goal.progress}%</span>
+          <Badge variant={STATUS_COLORS[goal.status] || 'secondary'}>
+            {goal.status || 'active'}
+          </Badge>
+          <span className="text-sm text-foreground-muted">
+            {goal.current_value || 0} / {goal.target_value || 1}
+          </span>
         </div>
       </CardContent>
     </Card>
@@ -136,25 +103,67 @@ function GoalCard({ goal, onClick }) {
 }
 
 function Goals() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [goals, setGoals] = useState([]);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setGoals(mockGoals);
-      setLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
+    if (user) {
+      fetchGoals();
+    }
+  }, [user]);
+
+  const fetchGoals = async () => {
+    setLoading(true);
+    const { data, error } = await getGoals();
+    if (data) {
+      setGoals(data);
+    }
+    setLoading(false);
+  };
+
+  const handleCreateGoal = async (newGoal) => {
+    const { data, error } = await createGoal({
+      ...newGoal,
+      user_id: user.id,
+      status: 'active',
+      current_value: 0,
+    });
+    if (data) {
+      setGoals([data, ...goals]);
+      setShowAddModal(false);
+    }
+  };
+
+  const handleUpdateProgress = async (goalId, progress) => {
+    const { data, error } = await updateGoal(goalId, { current_value: progress });
+    if (data) {
+      setGoals(goals.map(g => g.id === goalId ? data : g));
+    }
+  };
+
+  const handleCompleteGoal = async (goalId) => {
+    const { data, error } = await completeGoal(goalId);
+    if (data) {
+      setGoals(goals.map(g => g.id === goalId ? data : g));
+    }
+  };
+
+  const handleDeleteGoal = async (goalId) => {
+    const { error } = await deleteGoal(goalId);
+    if (!error) {
+      setGoals(goals.filter(g => g.id !== goalId));
+    }
+  };
 
   const filteredGoals = goals.filter((goal) => {
     const matchesFilter = filter === 'all' || goal.status === filter;
     const matchesSearch =
-      goal.title.toLowerCase().includes(search.toLowerCase()) ||
-      goal.category.toLowerCase().includes(search.toLowerCase());
+      goal.title?.toLowerCase().includes(search.toLowerCase()) ||
+      goal.domain?.toLowerCase().includes(search.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -174,7 +183,7 @@ function Goals() {
       title="Goals"
       subtitle="Track your personal goals and milestones"
       actions={
-        <Button>
+        <Button onClick={() => setShowAddModal(true)}>
           <FiPlus className="w-4 h-4 mr-2" />
           New Goal
         </Button>
@@ -239,6 +248,8 @@ function Goals() {
               key={goal.id}
               goal={goal}
               onClick={() => console.log('Goal clicked:', goal.id)}
+              onComplete={handleCompleteGoal}
+              onDelete={handleDeleteGoal}
             />
           ))}
         </Grid>
@@ -250,7 +261,7 @@ function Goals() {
             search ? 'Try adjusting your search' : 'Create your first goal to get started'
           }
           action={
-            <Button>
+            <Button onClick={() => setShowAddModal(true)}>
               <FiPlus className="w-4 h-4 mr-2" />
               Create Goal
             </Button>
