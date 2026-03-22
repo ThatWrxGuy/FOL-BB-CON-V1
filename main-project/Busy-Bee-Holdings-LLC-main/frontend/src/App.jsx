@@ -28,6 +28,9 @@ const Career = lazy(() => import('./pages/Career'));
 const Mindset = lazy(() => import('./pages/Mindset'));
 const Habits = lazy(() => import('./pages/Habits'));
 const Relationships = lazy(() => import('./pages/Relationships'));
+const Education = lazy(() => import('./pages/Education'));
+const Spirituality = lazy(() => import('./pages/Spirituality'));
+const Family = lazy(() => import('./pages/Family'));
 
 // Design System Layout
 import { Layout } from './components';
@@ -247,6 +250,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Relationships />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="education"
+            element={
+              <ProtectedRoute>
+                <Education />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="spirituality"
+            element={
+              <ProtectedRoute>
+                <Spirituality />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="family"
+            element={
+              <ProtectedRoute>
+                <Family />
               </ProtectedRoute>
             }
           />

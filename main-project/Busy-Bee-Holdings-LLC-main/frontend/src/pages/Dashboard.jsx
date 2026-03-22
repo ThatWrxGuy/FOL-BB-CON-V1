@@ -23,6 +23,10 @@ import {
   FiBrain,
   FiRepeat,
   FiHeart,
+  FiBook,
+  FiStar,
+  FiUsers,
+  FiDollarSign,
 } from 'react-icons/fi';
 import {
   Button,
@@ -340,18 +344,22 @@ function Dashboard() {
           <Card>
             <CardHeader title="Quick Actions" />
             <CardContent>
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                 <QuickAction icon={FiTarget} label="Goals" to="/goals" />
                 <QuickAction icon={FiCheck} label="Tasks" to="/tasks" />
                 <QuickAction icon={FiGrid} label="Domains" to="/domains" />
                 <QuickAction icon={FiZap} label="Brief" to="/briefs" />
                 <QuickAction icon={FiActivity} label="Health" to="/health" />
                 <QuickAction icon={FiBriefcase} label="Career" to="/career" />
-              </div>
-              <div className="grid grid-cols-3 gap-2 mt-2">
                 <QuickAction icon={FiBrain} label="Mindset" to="/mindset" />
                 <QuickAction icon={FiRepeat} label="Habits" to="/habits" />
                 <QuickAction icon={FiHeart} label="Relations" to="/relationships" />
+                <QuickAction icon={FiBook} label="Education" to="/education" />
+              </div>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <QuickAction icon={FiStar} label="Spirituality" to="/spirituality" />
+                <QuickAction icon={FiUsers} label="Family" to="/family" />
+                <QuickAction icon={FiDollarSign} label="Finance" to="/finance" />
               </div>
             </CardContent>
           </Card>
