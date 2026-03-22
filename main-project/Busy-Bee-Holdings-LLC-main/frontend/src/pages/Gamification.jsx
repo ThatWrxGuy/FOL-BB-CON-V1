@@ -28,9 +28,9 @@ import {
 // User's current progress
 const mockUserProgress = {
   level: 12,
-  levelName: 'Goal Getter',
+  levelName: 'Explorer',
   currentXP: 2450,
-  nextLevelXP: 3000,
+  nextLevelXP: 3500,
   totalPoints: 12450,
   rank: 42,
   totalUsers: 1250,
@@ -178,15 +178,23 @@ const mockLeaderboard = [
 
 // Milestones/Levels
 const mockLevels = [
+  // Levels scaled to total system points (~180K available)
   { level: 1, name: 'Newcomer', minXP: 0, reward: 'Welcome badge', emoji: '🌱' },
-  { level: 5, name: 'Explorer', minXP: 500, reward: '5 bonus points/day', emoji: '🔍' },
-  { level: 10, name: 'Achiever', minXP: 1500, reward: 'Custom profile frame', emoji: '⭐' },
-  { level: 15, name: 'Goal Getter', minXP: 3000, reward: '10 bonus points/day', emoji: '🎯' },
-  { level: 20, name: 'Champion', minXP: 5000, reward: 'Gold profile border', emoji: '🏆' },
-  { level: 25, name: 'Master', minXP: 8000, reward: '20 bonus points/day', emoji: '👑' },
-  { level: 30, name: 'Legend', minXP: 12000, reward: 'Exclusive badge', emoji: '🔥' },
-  { level: 40, name: 'Elite', minXP: 20000, reward: 'Premium features', emoji: '💎' },
-  { level: 50, name: 'Bee Master', minXP: 35000, reward: 'Lifetime premium', emoji: '🐝' },
+  { level: 5, name: 'Apprentice', minXP: 500, reward: '5 bonus points/day', emoji: '🌿' },
+  { level: 10, name: 'Explorer', minXP: 1500, reward: 'Custom profile frame', emoji: '🔍' },
+  { level: 15, name: 'Achiever', minXP: 3500, reward: '10 bonus points/day', emoji: '⭐' },
+  { level: 20, name: 'Goal Getter', minXP: 6000, reward: 'Bronze profile border', emoji: '🎯' },
+  { level: 25, name: 'Champion', minXP: 10000, reward: '15 bonus points/day', emoji: '🏆' },
+  { level: 30, name: 'Warrior', minXP: 15000, reward: 'Silver profile border', emoji: '⚔️' },
+  { level: 35, name: 'Master', minXP: 22000, reward: '20 bonus points/day', emoji: '👑' },
+  { level: 40, name: 'Legend', minXP: 32000, reward: 'Gold profile border', emoji: '🔥' },
+  { level: 45, name: 'Elite', minXP: 45000, reward: 'Premium features unlocked', emoji: '💎' },
+  { level: 50, name: 'Bee Master', minXP: 60000, reward: 'Lifetime premium + Trophy', emoji: '🐝' },
+  { level: 60, name: 'Platinum', minXP: 80000, reward: 'Exclusive platinum badge', emoji: '💠' },
+  { level: 70, name: 'Diamond', minXP: 105000, reward: 'VIP support access', emoji: '💠' },
+  { level: 80, name: 'Crown', minXP: 135000, reward: 'Crown profile frame', emoji: '👑' },
+  { level: 90, name: 'Supreme', minXP: 165000, reward: 'All rewards unlocked', emoji: '🌟' },
+  { level: 100, name: 'Transcendent', minXP: 200000, reward: 'LEGENDARY status forever', emoji: '✨' },
 ];
 
 // Recent activity
