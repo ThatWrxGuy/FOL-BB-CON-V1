@@ -15,6 +15,32 @@ from .executive.service import (
     ExecutiveBrief
 )
 
+from .health.service import (
+    HealthCell,
+    Workout,
+    WorkoutType,
+    Meal,
+    MealType,
+    SleepLog,
+    SleepQuality,
+    Vitals,
+    HealthSummary
+)
+
+from .career.service import (
+    CareerCell,
+    Job,
+    JobStatus,
+    EmploymentType,
+    Skill,
+    SkillLevel,
+    Certification,
+    CertificationStatus,
+    NetworkingContact,
+    CareerGoal,
+    CareerSummary
+)
+
 __all__ = [
     # Finance
     "FinanceCell",
@@ -26,5 +52,27 @@ __all__ = [
     "ExecutiveCell",
     "Metric",
     "MetricCategory",
-    "ExecutiveBrief"
+    "ExecutiveBrief",
+    # Health
+    "HealthCell",
+    "Workout",
+    "WorkoutType",
+    "Meal",
+    "MealType",
+    "SleepLog",
+    "SleepQuality",
+    "Vitals",
+    "HealthSummary",
+    # Career
+    "CareerCell",
+    "Job",
+    "JobStatus",
+    "EmploymentType",
+    "Skill",
+    "SkillLevel",
+    "Certification",
+    "CertificationStatus",
+    "NetworkingContact",
+    "CareerGoal",
+    "CareerSummary"
 ]

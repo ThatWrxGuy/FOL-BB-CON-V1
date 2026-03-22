@@ -23,6 +23,19 @@ const _storage = {
   transactions: new Map(),
   metrics: new Map(),
   briefs: new Map(),
+  health: {
+    workouts: new Map(),
+    meals: new Map(),
+    sleep: new Map(),
+    vitals: new Map(),
+  },
+  career: {
+    jobs: new Map(),
+    skills: new Map(),
+    certifications: new Map(),
+    contacts: new Map(),
+    goals: new Map(),
+  },
 };
 
 let _context = null;
@@ -43,6 +56,69 @@ function _initDemoData() {
       updated_at: new Date().toISOString(),
     };
     _storage.workspaces.set(workspace.id, workspace);
+    
+    // Create demo health data
+    const workouts = [
+      { workout_type: 'running', duration_minutes: 30, calories_burned: 300, distance_km: 5, intensity: 'moderate' },
+      { workout_type: 'weight_training', duration_minutes: 45, calories_burned: 250, intensity: 'high' },
+      { workout_type: 'yoga', duration_minutes: 60, calories_burned: 150, intensity: 'light' },
+      { workout_type: 'hiit', duration_minutes: 20, calories_burned: 280, intensity: 'high' },
+      { workout_type: 'swimming', duration_minutes: 40, calories_burned: 350, intensity: 'moderate' },
+    ];
+    
+    const healthKey = workspace.id;
+    _storage.health.workouts.set(healthKey, workouts.map((w, i) => ({
+      id: uuidv4(),
+      workspace_id: workspace.id,
+      user_id: 'user-demo',
+      ...w,
+      date: new Date(Date.now() - i * 3 * 24 * 60 * 60 * 1000).toISOString(),
+    })));
+    
+    // Demo sleep data
+    _storage.health.sleep.set(healthKey, [
+      { sleep_quality: 'good', hours_slept: 7.5, bed_time: '2026-03-20T23:00:00Z', wake_time: '2026-03-21T06:30:00Z', date: '2026-03-20' },
+      { sleep_quality: 'excellent', hours_slept: 8.0, bed_time: '2026-03-19T22:30:00Z', wake_time: '2026-03-20T06:30:00Z', date: '2026-03-19' },
+      { sleep_quality: 'fair', hours_slept: 6.0, bed_time: '2026-03-18T01:00:00Z', wake_time: '2026-03-18T07:00:00Z', date: '2026-03-18' },
+    ]);
+    
+    // Demo vitals
+    _storage.health.vitals.set(healthKey, [
+      { weight_kg: 75, height_cm: 180, blood_pressure_systolic: 120, blood_pressure_diastolic: 80, heart_rate_bpm: 72, date: '2026-03-21' },
+      { weight_kg: 75.5, height_cm: 180, blood_pressure_systolic: 118, blood_pressure_diastolic: 78, heart_rate_bpm: 70, date: '2026-03-15' },
+    ]);
+    
+    // Demo career data
+    const careerKey = workspace.id;
+    _storage.career.skills.set(careerKey, [
+      { name: 'JavaScript', category: 'tech', level: 'expert', years_experience: 8 },
+      { name: 'Python', category: 'tech', level: 'advanced', years_experience: 5 },
+      { name: 'Leadership', category: 'soft', level: 'advanced', years_experience: 4 },
+      { name: 'React', category: 'tech', level: 'expert', years_experience: 6 },
+      { name: 'Project Management', category: 'soft', level: 'intermediate', years_experience: 3 },
+    ]);
+    
+    _storage.career.jobs.set(careerKey, [
+      { company: 'Tech Corp', position: 'Senior Developer', status: 'interview', applied_date: '2026-03-15', location: 'San Francisco', employment_type: 'full_time' },
+      { company: 'StartupXYZ', position: 'Tech Lead', status: 'applied', applied_date: '2026-03-18', location: 'Remote', employment_type: 'full_time' },
+      { company: 'BigCorp Inc', position: 'Engineering Manager', status: 'screening', applied_date: '2026-03-10', location: 'New York', employment_type: 'full_time' },
+    ]);
+    
+    _storage.career.certifications.set(careerKey, [
+      { name: 'AWS Solutions Architect', provider: 'Amazon', status: 'completed', issue_date: '2025-06-15' },
+      { name: 'PMP', provider: 'PMI', status: 'in_progress', issue_date: '2026-01-01' },
+    ]);
+    
+    _storage.career.contacts.set(careerKey, [
+      { contact_name: 'Jane Smith', company: 'Tech Corp', role: 'CTO', met_through: 'Conference' },
+      { contact_name: 'John Doe', company: 'StartupXYZ', role: 'CEO', met_through: 'LinkedIn' },
+    ]);
+    
+    _storage.career.goals.set(careerKey, [
+      { title: 'Get AWS Certification', status: 'completed', progress: 100, category: 'certification' },
+      { title: 'Learn Machine Learning', status: 'active', progress: 45, category: 'skill' },
+      { title: 'Network with 10 CTOs', status: 'active', progress: 30, category: 'networking' },
+    ]);
     
     // Create demo transactions
     const transactions = [
@@ -400,6 +476,246 @@ export const AuditAPI = {
 };
 
 // ============================================================================
+// Health API
+// ============================================================================
+
+export const HealthAPI = {
+  async getSummary(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const periodDays = params.periodDays || 30;
+    const workouts = _storage.health.workouts.get(ws.id) || [];
+    const sleep = _storage.health.sleep.get(ws.id) || [];
+    const vitals = _storage.health.vitals.get(ws.id) || [];
+    
+    const totalWorkouts = workouts.length;
+    const totalMinutes = workouts.reduce((s, w) => s + (w.duration_minutes || 0), 0);
+    const totalCalories = workouts.reduce((s, w) => s + (w.calories_burned || 0), 0);
+    
+    const avgSleep = sleep.length > 0 
+      ? sleep.reduce((s, s_) => s + s_.hours_slept, 0) / sleep.length 
+      : 0;
+    
+    const currentWeight = vitals.length > 0 ? vitals[0].weight_kg : null;
+    const weightChange = vitals.length > 1 
+      ? (vitals[0].weight_kg || 0) - (vitals[vitals.length - 1].weight_kg || 0)
+      : 0;
+    
+    return {
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      period_days: periodDays,
+      total_workouts: totalWorkouts,
+      total_workout_minutes: totalMinutes,
+      total_calories_burned: totalCalories,
+      average_sleep_hours: avgSleep,
+      sleep_quality_avg: 2.5,
+      meals_logged: 0,
+      current_weight: currentWeight,
+      weight_change_kg: weightChange,
+    };
+  },
+  
+  async getWorkouts(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.health.workouts.get(ws.id) || [];
+  },
+  
+  async addWorkout(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const workout = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      ...data,
+      date: new Date().toISOString(),
+    };
+    if (!_storage.health.workouts.has(ws.id)) {
+      _storage.health.workouts.set(ws.id, []);
+    }
+    _storage.health.workouts.get(ws.id).unshift(workout);
+    return workout;
+  },
+  
+  async getSleepLogs(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.health.sleep.get(ws.id) || [];
+  },
+  
+  async addSleepLog(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const log = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      ...data,
+    };
+    if (!_storage.health.sleep.has(ws.id)) {
+      _storage.health.sleep.set(ws.id, []);
+    }
+    _storage.health.sleep.get(ws.id).unshift(log);
+    return log;
+  },
+  
+  async getVitals(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.health.vitals.get(ws.id) || [];
+  },
+  
+  async addVitals(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const vital = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      ...data,
+      date: new Date().toISOString().split('T')[0],
+    };
+    if (!_storage.health.vitals.has(ws.id)) {
+      _storage.health.vitals.set(ws.id, []);
+    }
+    _storage.health.vitals.get(ws.id).unshift(vital);
+    return vital;
+  },
+};
+
+// ============================================================================
+// Career API
+// ============================================================================
+
+export const CareerAPI = {
+  async getSummary(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const skills = _storage.career.skills.get(ws.id) || [];
+    const jobs = _storage.career.jobs.get(ws.id) || [];
+    const certs = _storage.career.certifications.get(ws.id) || [];
+    const contacts = _storage.career.contacts.get(ws.id) || [];
+    const goals = _storage.career.goals.get(ws.id) || [];
+    
+    const jobsByStatus = {};
+    jobs.forEach(j => {
+      jobsByStatus[j.status] = (jobsByStatus[j.status] || 0) + 1;
+    });
+    
+    const skillsByLevel = {};
+    skills.forEach(s => {
+      skillsByLevel[s.level] = (skillsByLevel[s.level] || 0) + 1;
+    });
+    
+    const activeCerts = certs.filter(c => c.status === 'completed' || c.status === 'in_progress').length;
+    const completedGoals = goals.filter(g => g.status === 'completed').length;
+    
+    return {
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      period_days: params.periodDays || 30,
+      total_applications: jobs.length,
+      applications_by_status: jobsByStatus,
+      total_skills: skills.length,
+      skills_by_level: skillsByLevel,
+      active_certifications: activeCerts,
+      networking_contacts: contacts.length,
+      career_goals: goals.length,
+      goals_completed: completedGoals,
+    };
+  },
+  
+  async getSkills(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.career.skills.get(ws.id) || [];
+  },
+  
+  async addSkill(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const skill = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      ...data,
+    };
+    if (!_storage.career.skills.has(ws.id)) {
+      _storage.career.skills.set(ws.id, []);
+    }
+    _storage.career.skills.get(ws.id).push(skill);
+    return skill;
+  },
+  
+  async getJobs(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    let jobs = _storage.career.jobs.get(ws.id) || [];
+    if (params.status) {
+      jobs = jobs.filter(j => j.status === params.status);
+    }
+    return jobs;
+  },
+  
+  async addJob(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const job = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      applied_date: new Date().toISOString().split('T')[0],
+      ...data,
+    };
+    if (!_storage.career.jobs.has(ws.id)) {
+      _storage.career.jobs.set(ws.id, []);
+    }
+    _storage.career.jobs.get(ws.id).push(job);
+    return job;
+  },
+  
+  async getCertifications(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.career.certifications.get(ws.id) || [];
+  },
+  
+  async getContacts(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.career.contacts.get(ws.id) || [];
+  },
+  
+  async addContact(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const contact = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      ...data,
+    };
+    if (!_storage.career.contacts.has(ws.id)) {
+      _storage.career.contacts.set(ws.id, []);
+    }
+    _storage.career.contacts.get(ws.id).push(contact);
+    return contact;
+  },
+  
+  async getCareerGoals(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    let goals = _storage.career.goals.get(ws.id) || [];
+    if (params.status) {
+      goals = goals.filter(g => g.status === params.status);
+    }
+    return goals;
+  },
+  
+  async addCareerGoal(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const goal = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      created_at: new Date().toISOString(),
+      ...data,
+    };
+    if (!_storage.career.goals.has(ws.id)) {
+      _storage.career.goals.set(ws.id, []);
+    }
+    _storage.career.goals.get(ws.id).push(goal);
+    return goal;
+  },
+};
+
+// ============================================================================
 // Export
 // ============================================================================
 
@@ -410,6 +726,8 @@ export default {
   Workspace: WorkspaceAPI,
   Finance: FinanceAPI,
   Executive: ExecutiveAPI,
+  Health: HealthAPI,
+  Career: CareerAPI,
   Lattice: LatticeAPI,
   Paths: PathsAPI,
   Audit: AuditAPI,
