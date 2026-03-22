@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiTrendingUp, FiTrendingDown, FiAward, FiStar, FiTrophy, FiZap, FiTarget, FiUsers, FiGift, FiLock, FiCheck, FiTrending, FiDollarSign, FiActivity, FiHeart, FiBook, FiClock, FiCalendar } from 'react-icons/fi';
+import { FiTrendingUp, FiTrendingDown, FiAward, FiStar, FiZap, FiTarget, FiUsers, FiGift, FiLock, FiCheck, FiTrending, FiDollarSign, FiActivity, FiHeart, FiBook, FiClock, FiCalendar } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -427,7 +427,7 @@ function Gamification() {
       {/* Stats Grid */}
       <Grid cols={{ default: 1, sm: 2, lg: 4 }} className="mb-6">
         <StatCard icon={FiStar} label="Total Points" value={mockUserProgress.totalPoints.toLocaleString()} subValue="All time" color="bg-yellow-100 text-yellow-600" />
-        <StatCard icon={FiTrophy} label="Rank" value={`#${mockUserProgress.rank}`} subValue={`of ${mockUserProgress.totalUsers} users`} color="bg-purple-100 text-purple-600" />
+        <StatCard icon={FiAward} label="Rank" value={`#${mockUserProgress.rank}`} subValue={`of ${mockUserProgress.totalUsers} users`} color="bg-purple-100 text-purple-600" />
         <StatCard icon={FiAward} label="Badges Earned" value={mockUserProgress.badges} subValue={`${unearnedAchievements.length} remaining`} color="bg-blue-100 text-blue-600" />
         <StatCard icon={FiZap} label="Current Streak" value={`${mockUserProgress.streak} days`} subValue="Keep it going!" color="bg-orange-100 text-orange-600" />
       </Grid>

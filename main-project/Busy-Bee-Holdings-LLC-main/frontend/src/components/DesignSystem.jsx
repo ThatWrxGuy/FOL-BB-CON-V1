@@ -25,15 +25,14 @@ import {
   FiX,
   FiActivity,
   FiBriefcase,
-  FiBrain,
   FiRepeat,
   FiHeart,
   FiBook,
   FiStar,
   FiUsers,
   FiMapPin,
-  FiPlane,
-  FiTrophy,
+  FiGlobe,
+  FiAward,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 
@@ -98,20 +97,20 @@ function Sidebar({ onClose, isCollapsed, onToggle, isMobile = false }) {
         { to: '/finance', icon: FiDollarSign, label: 'Finance' },
         { to: '/health', icon: FiActivity, label: 'Health' },
         { to: '/career', icon: FiBriefcase, label: 'Career' },
-        { to: '/mindset', icon: FiBrain, label: 'Mindset' },
+        { to: '/mindset', icon: FiZap, label: 'Mindset' },
         { to: '/habits', icon: FiRepeat, label: 'Habits' },
         { to: '/relationships', icon: FiHeart, label: 'Relationships' },
         { to: '/education', icon: FiBook, label: 'Education' },
         { to: '/spirituality', icon: FiStar, label: 'Spirituality' },
         { to: '/family', icon: FiUsers, label: 'Family' },
         { to: '/recreation', icon: FiMapPin, label: 'Recreation' },
-        { to: '/travel', icon: FiPlane, label: 'Travel' },
+        { to: '/travel', icon: FiGlobe, label: 'Travel' },
       ],
     },
     {
       title: 'GAMIFICATION',
       items: [
-        { to: '/gamification', icon: FiTrophy, label: 'Achievements' },
+        { to: '/gamification', icon: FiAward, label: 'Achievements' },
       ],
     },
     {

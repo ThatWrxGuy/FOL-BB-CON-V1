@@ -20,7 +20,6 @@ import {
   FiTarget,
   FiActivity,
   FiBriefcase,
-  FiBrain,
   FiRepeat,
   FiHeart,
   FiBook,
@@ -28,8 +27,8 @@ import {
   FiUsers,
   FiDollarSign,
   FiMapPin,
-  FiPlane,
-  FiTrophy,
+  FiGlobe,
+  FiAward,
 } from 'react-icons/fi';
 import {
   Button,
@@ -354,7 +353,7 @@ function Dashboard() {
                 <QuickAction icon={FiZap} label="Brief" to="/briefs" />
                 <QuickAction icon={FiActivity} label="Health" to="/health" />
                 <QuickAction icon={FiBriefcase} label="Career" to="/career" />
-                <QuickAction icon={FiBrain} label="Mindset" to="/mindset" />
+                <QuickAction icon={FiZap} label="Mindset" to="/mindset" />
                 <QuickAction icon={FiRepeat} label="Habits" to="/habits" />
                 <QuickAction icon={FiHeart} label="Relations" to="/relationships" />
                 <QuickAction icon={FiBook} label="Education" to="/education" />
@@ -362,9 +361,9 @@ function Dashboard() {
                 <QuickAction icon={FiUsers} label="Family" to="/family" />
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mt-2">
-                <QuickAction icon={FiTrophy} label="Achievements" to="/gamification" />
+                <QuickAction icon={FiAward} label="Achievements" to="/gamification" />
                 <QuickAction icon={FiMapPin} label="Recreation" to="/recreation" />
-                <QuickAction icon={FiPlane} label="Travel" to="/travel" />
+                <QuickAction icon={FiGlobe} label="Travel" to="/travel" />
                 <QuickAction icon={FiDollarSign} label="Finance" to="/finance" />
               </div>
             </CardContent>

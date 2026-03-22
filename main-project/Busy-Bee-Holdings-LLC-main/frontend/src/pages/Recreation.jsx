@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiTrendingUp, FiTrendingDown, FiMusic, FiCamera, FiBook, FiGamepad2, FiPalette, FiTv, FiClock, FiTarget, FiStar, FiAward, FiHeart } from 'react-icons/fi';
+import { FiPlus, FiTrendingUp, FiTrendingDown, FiCamera, FiBook, FiClock, FiTarget, FiStar, FiAward, FiHeart, FiActivity } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -35,7 +35,7 @@ const RECREATION_METRICS = {
 
 const mockStats = [
   { label: 'Overall Score', value: '72', trend: 5, icon: FiStar },
-  { label: 'Active Hobbies', value: '6', trend: 2, icon: FiPalette },
+  { label: 'Active Hobbies', value: '6', trend: 2, icon: FiStar },
   { label: 'Hours This Week', value: '12', trend: 8, icon: FiClock },
   { label: 'Projects', value: '4', trend: 1, icon: FiAward },
 ];
@@ -77,7 +77,7 @@ const mockBucketList = [
 ];
 
 const mockInsights = [
-  { label: 'Most time', value: 'Gaming (6h)', icon: FiGamepad2 },
+  { label: 'Most time', value: 'Photography (6h)', icon: FiCamera },
   { label: 'This month', value: '48 hours', icon: FiClock },
   { label: 'Completed', value: '2 projects', icon: FiAward },
   { label: 'Favorite', value: 'Photography', icon: FiCamera },

@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiTrendingUp, FiTrendingDown, FiMapPin, FiCalendar, FiPlane, FiAnchor, FiMountain, FiCompass, FiClock, FiTarget, FiStar, FiAward, FiCheck, FiGlobe } from 'react-icons/fi';
+import { FiPlus, FiTrendingUp, FiTrendingDown, FiMapPin, FiCalendar, FiAnchor, FiMountain, FiCompass, FiClock, FiTarget, FiStar, FiAward, FiCheck, FiGlobe } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -35,7 +35,7 @@ const TRAVEL_METRICS = {
 
 const mockStats = [
   { label: 'Countries Visited', value: '12', trend: 2, icon: FiGlobe },
-  { label: 'Trips This Year', value: '3', trend: 1, icon: FiPlane },
+  { label: 'Trips This Year', value: '3', trend: 1, icon: FiGlobe },
   { label: 'Miles Traveled', value: '8.5K', trend: 15, icon: FiMapPin },
   { label: 'Bucket List', value: '24', trend: 5, icon: FiAward },
 ];
@@ -80,7 +80,7 @@ const mockUpcomingEvents = [
 const mockInsights = [
   { label: 'Top destination', value: 'Japan', icon: FiMapPin },
   { label: 'Next trip', value: 'Tokyo (22 days)', icon: FiCalendar },
-  { label: 'This year', value: '3 trips planned', icon: FiPlane },
+  { label: 'This year', value: '3 trips planned', icon: FiGlobe },
   { label: 'Total spent', value: '$5,500', icon: FiStar },
 ];
 
@@ -258,7 +258,7 @@ function Travel() {
       actions={
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm">
-            <FiPlane className="w-4 h-4 mr-2" />
+            <FiGlobe className="w-4 h-4 mr-2" />
             Plan Trip
           </Button>
           <Button size="sm">

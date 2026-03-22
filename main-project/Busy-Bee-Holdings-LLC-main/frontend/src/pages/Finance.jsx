@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiTrendingUp, FiTrendingDown, FiDollarSign, FiCreditCard, FiPieChart, FiTarget, FiArrowUpRight, FiArrowDownRight, FiWallet, FiTrending, FiPieChart as FiChart } from 'react-icons/fi';
+import { FiPlus, FiTrendingUp, FiTrendingDown, FiDollarSign, FiCreditCard, FiPieChart, FiTarget, FiArrowUpRight, FiArrowDownRight } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -28,10 +28,10 @@ import {
 // These examples show the types of finance data users might track
 
 const mockStats = [
-  { label: 'Net Worth', value: '$12,543', trend: 3.2, icon: FiWallet },
+  { label: 'Net Worth', value: '$12,543', trend: 3.2, icon: FiDollarSign },
   { label: 'Monthly Income', value: '$8,500', trend: 5, icon: FiArrowUpRight },
   { label: 'Monthly Expenses', value: '$4,230', trend: -2, icon: FiArrowDownRight },
-  { label: 'Savings Rate', value: '50%', trend: 8, icon: FiTrending },
+  { label: 'Savings Rate', value: '50%', trend: 8, icon: FiTrendingUp },
 ];
 
 const mockAccounts = [

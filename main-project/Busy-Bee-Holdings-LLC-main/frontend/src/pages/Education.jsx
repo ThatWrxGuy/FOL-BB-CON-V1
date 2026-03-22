@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiTrendingUp, FiTrendingDown, FiBook, FiAward, FiClock, FiTarget, FiUsers, FiGraduationCap, FiZap, FiCheck, FiCalendar } from 'react-icons/fi';
+import { FiPlus, FiTrendingUp, FiTrendingDown, FiBook, FiAward, FiClock, FiTarget, FiUsers, FiZap, FiCheck, FiCalendar } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -36,7 +36,7 @@ const EDUCATION_METRICS = {
 // These examples show the types of education goals users might create
 
 const mockStats = [
-  { label: 'Overall Score', value: '70', trend: 5, icon: FiGraduationCap },
+  { label: 'Overall Score', value: '70', trend: 5, icon: FiAward },
   { label: 'Courses Active', value: '4', trend: 1, icon: FiBook },
   { label: 'Certifications', value: '3', trend: 1, icon: FiAward },
   { label: 'Hours Learned', value: '48', trend: 12, icon: FiClock },
@@ -74,7 +74,7 @@ const mockBooks = [
   { id: 1, title: 'Clean Code', author: 'Robert Martin', progress: 100, category: 'Development', completed: true },
   { id: 2, title: 'The Pragmatic Programmer', author: 'David Thomas', progress: 60, category: 'Development', completed: false },
   { id: 3, title: 'Design Patterns', author: 'Gang of Four', progress: 30, category: 'Development', completed: false },
-  { id: 4, title: 'You Don't Know JS', author: 'Kyle Simpson', progress: 85, category: 'Development', completed: false },
+  { id: 4, title: "You Don't Know JS", author: 'Kyle Simpson', progress: 85, category: 'Development', completed: false },
 ];
 
 const mockInsights = [

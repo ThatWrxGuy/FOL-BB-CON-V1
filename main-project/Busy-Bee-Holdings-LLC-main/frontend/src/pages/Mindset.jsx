@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiPlus, FiTrendingUp, FiTrendingDown, FiBrain, FiBook, FiStar, FiZap, FiClock, FiAward, FiTarget } from 'react-icons/fi';
+import { FiPlus, FiTrendingUp, FiTrendingDown, FiZap, FiBook, FiStar, FiClock, FiAward, FiTarget, FiActivity, FiHeart } from 'react-icons/fi';
 import {
   PageContainer,
   Card,
@@ -36,7 +36,7 @@ const MINDSET_METRICS = {
 // These examples show the types of mindset goals users might create
 
 const mockStats = [
-  { label: 'Overall Score', value: '72', trend: 3, icon: FiBrain },
+  { label: 'Overall Score', value: '72', trend: 3, icon: FiZap },
   { label: 'Meditation', value: '21', trend: 5, icon: FiZap },
   { label: 'Books Read', value: '8', trend: 2, icon: FiBook },
   { label: 'Streak Days', value: '12', trend: -1, icon: FiAward },
@@ -254,7 +254,7 @@ function Mindset() {
       actions={
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm">
-            <FiBrain className="w-4 h-4 mr-2" />
+            <FiZap className="w-4 h-4 mr-2" />
             Log Activity
           </Button>
           <Button size="sm">
