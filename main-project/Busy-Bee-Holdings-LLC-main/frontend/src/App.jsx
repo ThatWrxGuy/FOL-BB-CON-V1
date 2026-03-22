@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import { useAuth } from './context/AuthContext';
 
+// Busy Bee - Flower Architecture
+import { WorkspaceProvider } from './context/busy_bee';
+
 // Lazy load all pages for code splitting
 const Login = lazy(() => import('./pages/Login'));
 const Signup = lazy(() => import('./pages/Signup'));
@@ -58,7 +61,7 @@ function ProtectedRoute({ children, requireAdmin = false }) {
 }
 
 function App() {
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
 
   if (loading) {
     return <LoadingOverlay fullScreen message="Loading Busy Bee..." />;
@@ -73,8 +76,12 @@ function App() {
         <Route path="/demo" element={<Demo />} />
         <Route path="/onboarding" element={<Onboarding />} />
 
-        {/* Protected routes with Design System Layout */}
-        <Route path="/" element={<Layout />}>
+        {/* Protected routes with Design System Layout + Workspace */}
+        <Route path="/" element={
+          <WorkspaceProvider user={user}>
+            <Layout />
+          </WorkspaceProvider>
+        }>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route
             path="dashboard"

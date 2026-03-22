@@ -1,5 +1,6 @@
 /**
  * Busy Bee Finance - Design System Implementation
+ * Now with Flower Architecture integration!
  */
 
 import { useState, useEffect } from 'react';
@@ -18,6 +19,9 @@ import {
   LoadingOverlay,
   EmptyState,
 } from '../components';
+
+// Busy Bee SDK - Flower Architecture
+import { useWorkspace } from '../context/busy_bee';
 
 // Mock data for design demonstration
 const mockFinanceData = {
@@ -55,12 +59,40 @@ const mockFinanceData = {
 function Finance() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(mockFinanceData);
+  
+  // Flower Architecture - Workspace integration
+  const { workspace, financialSummary, refresh } = useWorkspace() || {};
 
   useEffect(() => {
     // Simulate loading
     const timer = setTimeout(() => setLoading(false), 800);
     return () => clearTimeout(timer);
   }, []);
+
+  // Use real data from workspace when available
+  useEffect(() => {
+    if (financialSummary) {
+      setData({
+        netWorth: financialSummary.net_profit || 0,
+        netWorthChange: ((financialSummary.net_profit - financialSummary.total_expenses) / financialSummary.total_expenses * 100) || 0,
+        totalIncome: financialSummary.total_income || 0,
+        totalSpending: financialSummary.total_expenses || 0,
+        netFlow: financialSummary.net_profit || 0,
+        avgDaily: (financialSummary.net_profit / 30) || 0,
+        spendingByCategory: Object.entries(financialSummary.category_breakdown || {}).map(([category, amount]) => ({
+          category,
+          amount,
+          percentage: Math.round((amount / financialSummary.total_expenses) * 100),
+          icon: getCategoryIcon(category),
+        })),
+        insights: financialSummary.net_profit > 0 
+          ? ['Your business is profitable!', 'Revenue exceeds expenses']
+          : ['Consider reviewing expenses', 'Focus on revenue growth'],
+        accounts: [],
+        transactions: [],
+      });
+    }
+  }, [financialSummary]);
 
   if (loading) {
     return <LoadingOverlay message="Loading finance data..." />;
@@ -182,6 +214,25 @@ function Finance() {
       </Card>
     </PageContainer>
   );
+}
+
+// Helper function for category icons
+function getCategoryIcon(category) {
+  const icons = {
+    sales: '🛒',
+    services: '🛠️',
+    operations: '⚙️',
+    marketing: '📣',
+    salary: '👥',
+    infrastructure: '🏗️',
+    housing: '🏠',
+    food: '🍔',
+    transport: '🚗',
+    utilities: '💡',
+    entertainment: '🎬',
+    other: '📦',
+  };
+  return icons[category.toLowerCase()] || '📦';
 }
 
 export default Finance;

@@ -1,6 +1,7 @@
 /**
  * Busy Bee Executive Brief - Design System Implementation
  * AI-generated executive summaries
+ * Now with Flower Architecture integration!
  */
 
 import { useState, useEffect } from 'react';
@@ -16,6 +17,9 @@ import {
   Grid,
   LoadingOverlay,
 } from '../components';
+
+// Busy Bee SDK - Flower Architecture
+import { useWorkspace } from '../context/busy_bee';
 
 const mockBrief = {
   generated: '2024-01-20T10:30:00Z',
@@ -39,6 +43,9 @@ function ExecutiveBrief() {
   const [loading, setLoading] = useState(true);
   const [brief, setBrief] = useState(null);
   const [generating, setGenerating] = useState(false);
+  
+  // Flower Architecture - Workspace integration
+  const { latestBrief, executive } = useWorkspace() || {};
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -48,9 +55,50 @@ function ExecutiveBrief() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleGenerate = () => {
+  // Use real brief from workspace when available
+  useEffect(() => {
+    if (latestBrief) {
+      setBrief({
+        generated: latestBrief.created_at,
+        period: 'Custom',
+        summary: latestBrief.summary,
+        highlights: [
+          ...(latestBrief.key_highlights?.map(h => ({ type: 'win', text: h, impact: 'high' })) || []),
+          ...(latestBrief.key_concerns?.map(c => ({ type: 'alert', text: c, impact: 'medium' })) || []),
+        ],
+        metrics: {
+          goalsCompleted: 0,
+          goalsTotal: 0,
+          streak: 0,
+          score: 0,
+        },
+        recommendations: latestBrief.recommendations,
+      });
+    }
+  }, [latestBrief]);
+
+  const handleGenerate = async () => {
     setGenerating(true);
-    setTimeout(() => setGenerating(false), 2000);
+    try {
+      if (executive?.generateBrief) {
+        const newBrief = await executive.generateBrief({ title: 'Executive Brief', periodDays: 30 });
+        setBrief({
+          generated: newBrief.created_at,
+          period: '30 Days',
+          summary: newBrief.summary,
+          highlights: [
+            ...(newBrief.key_highlights?.map(h => ({ type: 'win', text: h, impact: 'high' })) || []),
+            ...(newBrief.key_concerns?.map(c => ({ type: 'alert', text: c, impact: 'medium' })) || []),
+          ],
+          metrics: { goalsCompleted: 0, goalsTotal: 0, streak: 0, score: 0 },
+          recommendations: newBrief.recommendations,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to generate brief:', err);
+    } finally {
+      setGenerating(false);
+    }
   };
 
   if (loading) return <LoadingOverlay message="Loading executive brief..." />;
