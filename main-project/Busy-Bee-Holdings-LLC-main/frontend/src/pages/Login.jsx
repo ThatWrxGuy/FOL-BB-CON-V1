@@ -5,17 +5,28 @@
 import { useState } from 'react';
 import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi';
 import { Button, Input, Card, CardContent } from '../components';
+import { signIn } from '../lib/supabase';
 
 function Login({ onNavigate }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate login
-    setTimeout(() => setLoading(false), 1000);
+    setError(null);
+    
+    const { data, error: loginError } = await signIn(email, password);
+    
+    if (loginError) {
+      setError(loginError.message);
+    } else {
+      // Success - redirect to dashboard
+      window.location.href = '/dashboard';
+    }
+    setLoading(false);
   };
 
   return (
@@ -64,6 +75,12 @@ function Login({ onNavigate }) {
                   />
                 </div>
               </div>
+
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Signing in...' : 'Sign In'}

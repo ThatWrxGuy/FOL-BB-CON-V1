@@ -5,18 +5,30 @@
 import { useState } from 'react';
 import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
 import { Button, Input, Card, CardContent, Checkbox } from '../components';
+import { signUp } from '../lib/supabase';
 
 function Signup({ onNavigate }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // Simulate signup
-    setTimeout(() => setLoading(false), 1000);
+    setError(null);
+    
+    const { data, error: signupError } = await signUp(email, password, name);
+    
+    if (signupError) {
+      setError(signupError.message);
+      setLoading(false);
+    } else {
+      // Success - show message or redirect
+      alert('Check your email to confirm your account!');
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,6 +102,12 @@ function Signup({ onNavigate }) {
                   </button>
                 </p>
               </div>
+
+              {error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                  {error}
+                </div>
+              )}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Creating account...' : 'Create Account'}
