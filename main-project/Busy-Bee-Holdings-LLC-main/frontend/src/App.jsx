@@ -33,6 +33,7 @@ const Spirituality = lazy(() => import('./pages/Spirituality'));
 const Family = lazy(() => import('./pages/Family'));
 const Recreation = lazy(() => import('./pages/Recreation'));
 const Travel = lazy(() => import('./pages/Travel'));
+const Gamification = lazy(() => import('./pages/Gamification'));
 
 // Design System Layout
 import { Layout } from './components';
@@ -292,6 +293,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Travel />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="gamification"
+            element={
+              <ProtectedRoute>
+                <Gamification />
               </ProtectedRoute>
             }
           />

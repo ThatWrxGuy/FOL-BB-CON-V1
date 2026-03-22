@@ -33,6 +33,7 @@ import {
   FiUsers,
   FiMapPin,
   FiPlane,
+  FiTrophy,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 
@@ -105,6 +106,12 @@ function Sidebar({ onClose, isCollapsed, onToggle, isMobile = false }) {
         { to: '/family', icon: FiUsers, label: 'Family' },
         { to: '/recreation', icon: FiMapPin, label: 'Recreation' },
         { to: '/travel', icon: FiPlane, label: 'Travel' },
+      ],
+    },
+    {
+      title: 'GAMIFICATION',
+      items: [
+        { to: '/gamification', icon: FiTrophy, label: 'Achievements' },
       ],
     },
     {

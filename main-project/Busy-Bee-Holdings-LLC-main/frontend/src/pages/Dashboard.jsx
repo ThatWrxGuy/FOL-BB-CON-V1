@@ -29,6 +29,7 @@ import {
   FiDollarSign,
   FiMapPin,
   FiPlane,
+  FiTrophy,
 } from 'react-icons/fi';
 import {
   Button,
@@ -361,6 +362,7 @@ function Dashboard() {
                 <QuickAction icon={FiUsers} label="Family" to="/family" />
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mt-2">
+                <QuickAction icon={FiTrophy} label="Achievements" to="/gamification" />
                 <QuickAction icon={FiMapPin} label="Recreation" to="/recreation" />
                 <QuickAction icon={FiPlane} label="Travel" to="/travel" />
                 <QuickAction icon={FiDollarSign} label="Finance" to="/finance" />
