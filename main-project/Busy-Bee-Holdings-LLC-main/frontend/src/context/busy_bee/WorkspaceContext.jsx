@@ -34,6 +34,8 @@ export function WorkspaceProvider({ children, user }) {
   const [latestBrief, setLatestBrief] = useState(null);
   const [healthSummary, setHealthSummary] = useState(null);
   const [careerSummary, setCareerSummary] = useState(null);
+  const [mindsetSummary, setMindsetSummary] = useState(null);
+  const [relationshipsSummary, setRelationshipsSummary] = useState(null);
 
   // Initialize workspace on mount
   useEffect(() => {
@@ -103,6 +105,14 @@ export function WorkspaceProvider({ children, user }) {
       const career = await BusyBee.Career.getSummary({ periodDays: 30 });
       setCareerSummary(career);
       
+      // Load mindset summary
+      const mindset = await BusyBee.Mindset.getSummary({ periodDays: 30 });
+      setMindsetSummary(mindset);
+      
+      // Load relationships summary
+      const relationships = await BusyBee.Relationships.getSummary({ periodDays: 30 });
+      setRelationshipsSummary(relationships);
+      
     } catch (err) {
       console.error('Failed to load workspace data:', err);
     }
@@ -168,6 +178,8 @@ export function WorkspaceProvider({ children, user }) {
     latestBrief,
     healthSummary,
     careerSummary,
+    mindsetSummary,
+    relationshipsSummary,
     // Actions
     refresh,
     createWorkspace,
@@ -177,6 +189,8 @@ export function WorkspaceProvider({ children, user }) {
     executive: BusyBee.Executive,
     health: BusyBee.Health,
     career: BusyBee.Career,
+    mindset: BusyBee.Mindset,
+    relationships: BusyBee.Relationships,
     lattice: BusyBee.Lattice,
     paths: BusyBee.Paths,
     audit: BusyBee.Audit,

@@ -41,6 +41,28 @@ from .career.service import (
     CareerSummary
 )
 
+from .mindset.service import (
+    MindsetCell,
+    JournalEntry,
+    MoodLevel,
+    MoodTag,
+    Affirmation,
+    MindfulnessSession,
+    Goal as MindsetGoal,
+    MindsetSummary
+)
+
+from .relationships.service import (
+    RelationshipsCell,
+    Person,
+    RelationshipType,
+    Interaction,
+    InteractionType,
+    ImportantDate,
+    RelationshipGoal,
+    RelationshipsSummary
+)
+
 __all__ = [
     # Finance
     "FinanceCell",
@@ -74,5 +96,23 @@ __all__ = [
     "CertificationStatus",
     "NetworkingContact",
     "CareerGoal",
-    "CareerSummary"
+    "CareerSummary",
+    # Mindset
+    "MindsetCell",
+    "JournalEntry",
+    "MoodLevel",
+    "MoodTag",
+    "Affirmation",
+    "MindfulnessSession",
+    "MindsetGoal",
+    "MindsetSummary",
+    # Relationships
+    "RelationshipsCell",
+    "Person",
+    "RelationshipType",
+    "Interaction",
+    "InteractionType",
+    "ImportantDate",
+    "RelationshipGoal",
+    "RelationshipsSummary"
 ]

@@ -36,6 +36,18 @@ const _storage = {
     contacts: new Map(),
     goals: new Map(),
   },
+  mindset: {
+    journal: new Map(),
+    affirmations: new Map(),
+    mindfulness: new Map(),
+    goals: new Map(),
+  },
+  relationships: {
+    people: new Map(),
+    interactions: new Map(),
+    importantDates: new Map(),
+    goals: new Map(),
+  },
 };
 
 let _context = null;
@@ -118,6 +130,72 @@ function _initDemoData() {
       { title: 'Get AWS Certification', status: 'completed', progress: 100, category: 'certification' },
       { title: 'Learn Machine Learning', status: 'active', progress: 45, category: 'skill' },
       { title: 'Network with 10 CTOs', status: 'active', progress: 30, category: 'networking' },
+    ]);
+    
+    // Demo mindset/journal data
+    const mindsetKey = workspace.id;
+    _storage.mindset.journal.set(mindsetKey, [
+      { 
+        title: 'Morning Reflection', 
+        content: 'Today I feel grateful for the opportunity to work on this project. Feeling motivated and ready to tackle challenges.',
+        mood: 4,
+        mood_tags: ['grateful', 'motivated'],
+        is_gratitude: true,
+        gratitude_items: ['Health', 'Family', 'Work'],
+        date: '2026-03-21'
+      },
+      { 
+        title: 'Afternoon Check-in', 
+        content: 'Feeling a bit stressed about the deadline but confident we can pull through. Took a short walk which helped.',
+        mood: 3,
+        mood_tags: ['stressed', 'calm'],
+        is_gratitude: false,
+        date: '2026-03-20'
+      },
+      { 
+        title: 'Gratitude List', 
+        content: 'Grateful for the support from my team today.',
+        mood: 5,
+        mood_tags: ['grateful', 'happy'],
+        is_gratitude: true,
+        gratitude_items: ['Team members', 'Good health', 'Sunny weather'],
+        date: '2026-03-19'
+      },
+    ]);
+    
+    _storage.mindset.affirmations.set(mindsetKey, [
+      { text: 'I am capable of achieving my goals', category: 'confidence', is_favorite: true, times_used: 5 },
+      { text: 'Every day I am growing stronger', category: 'growth', is_favorite: true, times_used: 3 },
+      { text: 'I embrace challenges as opportunities', category: 'mindset', is_favorite: false, times_used: 2 },
+      { text: 'I am worthy of success and happiness', category: 'self-worth', is_favorite: false, times_used: 1 },
+    ]);
+    
+    _storage.mindfulness.set(mindsetKey, [
+      { session_type: 'meditation', duration_minutes: 10, feeling_after: 'calm', date: '2026-03-21T08:00:00Z' },
+      { session_type: 'breathing', duration_minutes: 5, feeling_after: 'relaxed', date: '2026-03-20T14:00:00Z' },
+      { session_type: 'meditation', duration_minutes: 15, feeling_after: 'peaceful', date: '2026-03-19T07:30:00Z' },
+    ]);
+    
+    // Demo relationships data
+    const relKey = workspace.id;
+    _storage.relationships.people.set(relKey, [
+      { name: 'Sarah Johnson', relationship_type: 'friend', health: 'healthy', importance: 9, birthday: '1990-05-15', last_interaction: '2026-03-20' },
+      { name: 'Mike Chen', relationship_type: 'colleague', health: 'healthy', importance: 7, company: 'TechCorp', last_interaction: '2026-03-19' },
+      { name: 'Mom', relationship_type: 'family', health: 'flourishing', importance: 10, birthday: '1965-08-22', last_interaction: '2026-03-18' },
+      { name: 'Alex Rivera', relationship_type: 'mentor', health: 'healthy', importance: 8, role: 'Senior Engineer', last_interaction: '2026-03-15' },
+      { name: 'Jordan Lee', relationship_type: 'romantic', health: 'healthy', importance: 10, anniversary: '2024-01-01', last_interaction: '2026-03-21' },
+    ]);
+    
+    _storage.relationships.interactions.set(relKey, [
+      { person_id: 0, interaction_type: 'call', summary: 'Caught up on life updates', mood_after: 5, date: '2026-03-20T18:00:00Z' },
+      { person_id: 1, interaction_type: 'in_person', summary: 'Team standup meeting', mood_after: 4, date: '2026-03-19T10:00:00Z' },
+      { person_id: 2, interaction_type: 'video', summary: 'Weekly call', mood_after: 5, date: '2026-03-18T20:00:00Z' },
+    ]);
+    
+    _storage.relationships.importantDates.set(relKey, [
+      { title: "Sarah's Birthday", date: '2026-05-15', date_type: 'birthday', person_id: 0, recurring: true },
+      { title: 'Mom Birthday', date: '2026-08-22', date_type: 'birthday', person_id: 2, recurring: true },
+      { title: 'Anniversary', date: '2027-01-01', date_type: 'anniversary', recurring: true },
     ]);
     
     // Create demo transactions
@@ -716,6 +794,240 @@ export const CareerAPI = {
 };
 
 // ============================================================================
+// Mindset API (Journaling + Mindfulness)
+// ============================================================================
+
+export const MindsetAPI = {
+  async getSummary(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const journal = _storage.mindset.journal.get(ws.id) || [];
+    const affirmations = _storage.mindset.affirmations.get(ws.id) || [];
+    const mindfulness = _storage.mindfulness.get(ws.id) || [];
+    
+    const gratitudeEntries = journal.filter(e => e.is_gratitude);
+    const moods = journal.filter(e => e.mood).map(e => e.mood);
+    const avgMood = moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
+    
+    const allTags = journal.flatMap(e => e.mood_tags || []);
+    const tagCounts = {};
+    allTags.forEach(t => tagCounts[t] = (tagCounts[t] || 0) + 1);
+    const topMoods = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(t => t[0]);
+    
+    const totalMindfulnessMinutes = mindfulness.reduce((s, m) => s + (m.duration_minutes || 0), 0);
+    const affirmationsUsed = affirmations.reduce((s, a) => s + (a.times_used || 0), 0);
+    
+    return {
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      period_days: params.periodDays || 30,
+      journal_entries: journal.length,
+      gratitude_entries: gratitudeEntries.length,
+      average_mood: avgMood,
+      top_moods: topMoods,
+      mindfulness_minutes: totalMindfulnessMinutes,
+      total_sessions: mindfulness.length,
+      affirmations_used: affirmationsUsed,
+    };
+  },
+  
+  async getJournalEntries(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    let entries = _storage.mindset.journal.get(ws.id) || [];
+    if (params.isGratitude) {
+      entries = entries.filter(e => e.is_gratitude);
+    }
+    return entries.slice(0, params.limit || 20);
+  },
+  
+  async addJournalEntry(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const entry = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      created_at: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0],
+      ...data,
+    };
+    if (!_storage.mindset.journal.has(ws.id)) {
+      _storage.mindset.journal.set(ws.id, []);
+    }
+    _storage.mindset.journal.get(ws.id).unshift(entry);
+    return entry;
+  },
+  
+  async getAffirmations(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    let affirmations = _storage.mindset.affirmations.get(ws.id) || [];
+    if (params.favoritesOnly) {
+      affirmations = affirmations.filter(a => a.is_favorite);
+    }
+    return affirmations;
+  },
+  
+  async addAffirmation(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const affirmation = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      created_at: new Date().toISOString(),
+      is_favorite: false,
+      times_used: 0,
+      ...data,
+    };
+    if (!_storage.mindset.affirmations.has(ws.id)) {
+      _storage.mindset.affirmations.set(ws.id, []);
+    }
+    _storage.mindset.affirmations.get(ws.id).push(affirmation);
+    return affirmation;
+  },
+  
+  async getRandomAffirmation() {
+    const ws = await WorkspaceAPI.getCurrent();
+    const affirmations = _storage.mindset.affirmations.get(ws.id) || [];
+    if (affirmations.length === 0) return null;
+    const random = affirmations[Math.floor(Math.random() * affirmations.length)];
+    random.times_used = (random.times_used || 0) + 1;
+    return random;
+  },
+  
+  async getMindfulnessSessions(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.mindfulness.get(ws.id) || [];
+  },
+  
+  async addMindfulnessSession(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const session = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      date: new Date().toISOString(),
+      ...data,
+    };
+    if (!_storage.mindfulness.has(ws.id)) {
+      _storage.mindfulness.set(ws.id, []);
+    }
+    _storage.mindfulness.get(ws.id).unshift(session);
+    return session;
+  },
+};
+
+// ============================================================================
+// Relationships API
+// ============================================================================
+
+export const RelationshipsAPI = {
+  async getSummary(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const people = _storage.relationships.people.get(ws.id) || [];
+    const interactions = _storage.relationships.interactions.get(ws.id) || [];
+    const importantDates = _storage.relationships.importantDates.get(ws.id) || [];
+    
+    const byType = {};
+    people.forEach(p => {
+      byType[p.relationship_type] = (byType[p.relationship_type] || 0) + 1;
+    });
+    
+    const moods = interactions.filter(i => i.mood_after).map(i => i.mood_after);
+    const avgMood = moods.length > 0 ? moods.reduce((a, b) => a + b, 0) / moods.length : 0;
+    
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const neglected = people.filter(p => {
+      if (!p.last_interaction) return true;
+      return new Date(p.last_interaction) < thirtyDaysAgo;
+    }).length;
+    
+    return {
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      period_days: params.periodDays || 30,
+      total_people: people.length,
+      by_type: byType,
+      total_interactions: interactions.length,
+      avg_mood_after: avgMood,
+      neglected_relationships: neglected,
+      upcoming_important_dates: importantDates.length,
+    };
+  },
+  
+  async getPeople(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    let people = _storage.relationships.people.get(ws.id) || [];
+    if (params.relationshipType) {
+      people = people.filter(p => p.relationship_type === params.relationshipType);
+    }
+    return people;
+  },
+  
+  async addPerson(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const person = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      created_at: new Date().toISOString(),
+      importance: 5,
+      health: 'new',
+      ...data,
+    };
+    if (!_storage.relationships.people.has(ws.id)) {
+      _storage.relationships.people.set(ws.id, []);
+    }
+    _storage.relationships.people.get(ws.id).push(person);
+    return person;
+  },
+  
+  async getInteractions(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    let interactions = _storage.relationships.interactions.get(ws.id) || [];
+    if (params.personId) {
+      interactions = interactions.filter(i => i.person_id === params.personId);
+    }
+    return interactions.slice(0, params.limit || 20);
+  },
+  
+  async addInteraction(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const interaction = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      date: new Date().toISOString(),
+      ...data,
+    };
+    if (!_storage.relationships.interactions.has(ws.id)) {
+      _storage.relationships.interactions.set(ws.id, []);
+    }
+    _storage.relationships.interactions.get(ws.id).unshift(interaction);
+    return interaction;
+  },
+  
+  async getImportantDates(params = {}) {
+    const ws = await WorkspaceAPI.getCurrent();
+    return _storage.relationships.importantDates.get(ws.id) || [];
+  },
+  
+  async addImportantDate(data) {
+    const ws = await WorkspaceAPI.getCurrent();
+    const date = {
+      id: uuidv4(),
+      workspace_id: ws.id,
+      user_id: _context?.user_id || 'user-demo',
+      created_at: new Date().toISOString(),
+      ...data,
+    };
+    if (!_storage.relationships.importantDates.has(ws.id)) {
+      _storage.relationships.importantDates.set(ws.id, []);
+    }
+    _storage.relationships.importantDates.get(ws.id).push(date);
+    return date;
+  },
+};
+
+// ============================================================================
 // Export
 // ============================================================================
 
@@ -728,6 +1040,8 @@ export default {
   Executive: ExecutiveAPI,
   Health: HealthAPI,
   Career: CareerAPI,
+  Mindset: MindsetAPI,
+  Relationships: RelationshipsAPI,
   Lattice: LatticeAPI,
   Paths: PathsAPI,
   Audit: AuditAPI,
