@@ -3,11 +3,13 @@
  */
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FiMail, FiLock, FiArrowRight } from 'react-icons/fi';
 import { Button, Input, Card, CardContent } from '../components';
 import { signIn } from '../lib/supabase';
 
 function Login({ onNavigate }) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -24,7 +26,7 @@ function Login({ onNavigate }) {
       setError(loginError.message);
     } else {
       // Success - redirect to dashboard
-      window.location.href = '/dashboard';
+      navigate('/dashboard', { replace: true });
     }
     setLoading(false);
   };

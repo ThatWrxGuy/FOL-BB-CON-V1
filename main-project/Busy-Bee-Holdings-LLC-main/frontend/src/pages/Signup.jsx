@@ -3,16 +3,18 @@
  */
 
 import { useState } from 'react';
-import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { FiMail, FiLock, FiUser, FiArrowRight, FiCheck } from 'react-icons/fi';
 import { Button, Input, Card, CardContent, Checkbox } from '../components';
 import { signUp } from '../lib/supabase';
 
 function Signup({ onNavigate }) {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,10 +26,13 @@ function Signup({ onNavigate }) {
     if (signupError) {
       setError(signupError.message);
       setLoading(false);
-    } else {
-      // Success - show message or redirect
-      alert('Check your email to confirm your account!');
+    } else if (data?.user && !data.session) {
+      // Email confirmation required
+      setSuccess(true);
       setLoading(false);
+    } else {
+      // Auto-login signup - redirect to dashboard
+      navigate('/dashboard', { replace: true });
     }
   };
 
@@ -90,7 +95,13 @@ function Signup({ onNavigate }) {
               </div>
 
               <div className="flex items-start gap-3">
-                <input type="checkbox" className="mt-1 h-4 w-4" required />
+                <input 
+                  type="checkbox" 
+                  className="mt-1 h-4 w-4"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  required 
+                />
                 <p className="text-sm text-foreground-muted">
                   I agree to the{' '}
                   <button type="button" className="text-primary hover:underline">
@@ -106,6 +117,19 @@ function Signup({ onNavigate }) {
               {error && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                   {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-600 font-medium mb-2">
+                    <FiCheck className="w-5 h-5" />
+                    Account created!
+                  </div>
+                  <p className="text-sm text-green-600">
+                    We've sent a confirmation email to <strong>{email}</strong>. 
+                    Please check your inbox and click the confirmation link to activate your account.
+                  </p>
                 </div>
               )}
 

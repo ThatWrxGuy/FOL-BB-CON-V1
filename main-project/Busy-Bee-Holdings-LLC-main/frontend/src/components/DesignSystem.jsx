@@ -68,8 +68,8 @@ const NavItem = ({ to, icon: Icon, label, isCollapsed, onClick }) => {
  * Design System Sidebar
  * Single source of truth for sidebar styling
  */
-function Sidebar({ onClose, isCollapsed, onToggle, isMobile = false }) {
-  const { user, logout } = useAuth();
+function Sidebar({ onClose, isCollapsed, isMobile = false }) {
+  const { user, profile, logout } = useAuth();
   const navigate = useNavigate();
 
   const navSections = [
@@ -210,13 +210,13 @@ function Sidebar({ onClose, isCollapsed, onToggle, isMobile = false }) {
         >
           <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
             <span className="text-sm font-medium text-primary">
-              {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
+              {profile?.full_name?.charAt(0) || profile?.username?.charAt(0) || user?.email?.charAt(0) || 'U'}
             </span>
           </div>
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground truncate">
-                {user?.full_name || 'User'}
+                {profile?.full_name || profile?.username || 'User'}
               </p>
               <p className="text-xs text-foreground-muted truncate">{user?.email}</p>
             </div>

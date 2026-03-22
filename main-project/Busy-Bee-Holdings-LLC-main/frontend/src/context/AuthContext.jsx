@@ -1,45 +1,73 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../services/api';
+import { supabase, getProfile } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        setUser(session.user);
+        await fetchProfile(session.user.id);
+      } else {
+        setUser(null);
+        setProfile(null);
+      }
+      setLoading(false);
+    });
+
+    // Initial auth check
     checkAuth();
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await authAPI.getMe();
-      setUser(response.data);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUser(session.user);
+        await fetchProfile(session.user.id);
+      }
     } catch (err) {
-      localStorage.removeItem('token');
-      setUser(null);
+      console.error('Auth check error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProfile = async (userId) => {
+    try {
+      const { data, error } = await getProfile(userId);
+      if (data) {
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error('Profile fetch error:', err);
     }
   };
 
   const login = async (email, password) => {
     setError(null);
     try {
-      const response = await authAPI.login(email, password);
-      const { access_token } = response.data;
-      localStorage.setItem('token', access_token);
-      await checkAuth();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      setUser(data.user);
+      await fetchProfile(data.user.id);
       return true;
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed');
+      setError(err.message || 'Login failed');
       return false;
     }
   };
@@ -47,32 +75,68 @@ export function AuthProvider({ children }) {
   const signup = async (email, password, fullName) => {
     setError(null);
     try {
-      await authAPI.signup(email, password, fullName);
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            username: fullName?.toLowerCase().replace(/\s+/g, '_'),
+          },
+        },
+      });
+      
+      if (error) throw error;
+      
+      // If email confirmation is required
+      if (data.user && !data.session) {
+        return { requiresConfirmation: true };
+      }
+      
       return true;
     } catch (err) {
-      setError(err.response?.data?.detail || 'Signup failed');
+      setError(err.message || 'Signup failed');
       return false;
     }
   };
 
   const logout = async () => {
     try {
-      await authAPI.logout();
+      await supabase.auth.signOut();
     } catch (err) {
-      // Ignore errors
+      console.error('Logout error:', err);
     } finally {
-      localStorage.removeItem('token');
       setUser(null);
+      setProfile(null);
     }
+  };
+
+  const updateProfile = async (updates) => {
+    if (!user) return { data: null, error: 'Not authenticated' };
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id)
+      .select()
+      .single();
+    
+    if (data) {
+      setProfile(data);
+    }
+    
+    return { data, error };
   };
 
   const value = {
     user,
+    profile,
     loading,
     error,
     login,
     signup,
     logout,
+    updateProfile,
     isAuthenticated: !!user,
   };
 
