@@ -31,6 +31,8 @@ import {
   FiBook,
   FiStar,
   FiUsers,
+  FiMapPin,
+  FiPlane,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 
@@ -101,6 +103,8 @@ function Sidebar({ onClose, isCollapsed, onToggle, isMobile = false }) {
         { to: '/education', icon: FiBook, label: 'Education' },
         { to: '/spirituality', icon: FiStar, label: 'Spirituality' },
         { to: '/family', icon: FiUsers, label: 'Family' },
+        { to: '/recreation', icon: FiMapPin, label: 'Recreation' },
+        { to: '/travel', icon: FiPlane, label: 'Travel' },
       ],
     },
     {
