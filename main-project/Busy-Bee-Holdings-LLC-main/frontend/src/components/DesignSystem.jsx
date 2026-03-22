@@ -25,6 +25,9 @@ import {
   FiX,
   FiActivity,
   FiBriefcase,
+  FiBrain,
+  FiRepeat,
+  FiHeart,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 
@@ -89,6 +92,9 @@ function Sidebar({ onClose, isCollapsed, onToggle, isMobile = false }) {
         { to: '/finance', icon: FiDollarSign, label: 'Finance' },
         { to: '/health', icon: FiActivity, label: 'Health' },
         { to: '/career', icon: FiBriefcase, label: 'Career' },
+        { to: '/mindset', icon: FiBrain, label: 'Mindset' },
+        { to: '/habits', icon: FiRepeat, label: 'Habits' },
+        { to: '/relationships', icon: FiHeart, label: 'Relationships' },
       ],
     },
     {

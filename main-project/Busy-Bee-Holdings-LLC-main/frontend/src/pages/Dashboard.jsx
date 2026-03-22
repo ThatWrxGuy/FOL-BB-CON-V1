@@ -20,6 +20,9 @@ import {
   FiTarget,
   FiActivity,
   FiBriefcase,
+  FiBrain,
+  FiRepeat,
+  FiHeart,
 } from 'react-icons/fi';
 import {
   Button,
@@ -202,21 +205,34 @@ function GoalCard({ goal }) {
 
 function DomainCard({ domain }) {
   const meta = DOMAIN_META[domain.id] || { emoji: '📊', label: domain.name };
+  const domainRoutes = {
+    health: '/health',
+    career: '/career',
+    mindset: '/mindset',
+    habits: '/habits',
+    relationships: '/relationships',
+    finance: '/finance',
+    education: '/education',
+    family: '/family',
+    spirituality: '/spirituality',
+  };
 
   return (
-    <Card hover className="cursor-pointer">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <span className="text-2xl">{meta.emoji}</span>
-          <div className="flex-1">
-            <h3 className="font-medium text-foreground">{meta.label}</h3>
-            <p className="text-xs text-foreground-muted">Domain Score</p>
+    <Link to={domainRoutes[domain.id] || '/domains'}>
+      <Card hover className="cursor-pointer">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-2xl">{meta.emoji}</span>
+            <div className="flex-1">
+              <h3 className="font-medium text-foreground">{meta.label}</h3>
+              <p className="text-xs text-foreground-muted">Domain Score</p>
+            </div>
+            <span className="text-xl font-bold text-primary">{domain.score}</span>
           </div>
-          <span className="text-xl font-bold text-primary">{domain.score}</span>
-        </div>
-        <Progress value={domain.score} className="h-1.5" />
-      </CardContent>
-    </Card>
+          <Progress value={domain.score} className="h-1.5" />
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 
@@ -324,13 +340,18 @@ function Dashboard() {
           <Card>
             <CardHeader title="Quick Actions" />
             <CardContent>
-              <div className="grid grid-cols-6 gap-4">
-                <QuickAction icon={FiTarget} label="New Goal" to="/goals" />
-                <QuickAction icon={FiCheck} label="Add Task" to="/tasks" />
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                <QuickAction icon={FiTarget} label="Goals" to="/goals" />
+                <QuickAction icon={FiCheck} label="Tasks" to="/tasks" />
                 <QuickAction icon={FiGrid} label="Domains" to="/domains" />
                 <QuickAction icon={FiZap} label="Brief" to="/briefs" />
                 <QuickAction icon={FiActivity} label="Health" to="/health" />
                 <QuickAction icon={FiBriefcase} label="Career" to="/career" />
+              </div>
+              <div className="grid grid-cols-3 gap-2 mt-2">
+                <QuickAction icon={FiBrain} label="Mindset" to="/mindset" />
+                <QuickAction icon={FiRepeat} label="Habits" to="/habits" />
+                <QuickAction icon={FiHeart} label="Relations" to="/relationships" />
               </div>
             </CardContent>
           </Card>

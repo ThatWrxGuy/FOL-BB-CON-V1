@@ -25,6 +25,9 @@ const TreeOfLife = lazy(() => import('./pages/TreeOfLife'));
 const Metatron = lazy(() => import('./pages/Metatron'));
 const Health = lazy(() => import('./pages/Health'));
 const Career = lazy(() => import('./pages/Career'));
+const Mindset = lazy(() => import('./pages/Mindset'));
+const Habits = lazy(() => import('./pages/Habits'));
+const Relationships = lazy(() => import('./pages/Relationships'));
 
 // Design System Layout
 import { Layout } from './components';
@@ -220,6 +223,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Career />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="mindset"
+            element={
+              <ProtectedRoute>
+                <Mindset />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="habits"
+            element={
+              <ProtectedRoute>
+                <Habits />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="relationships"
+            element={
+              <ProtectedRoute>
+                <Relationships />
               </ProtectedRoute>
             }
           />
