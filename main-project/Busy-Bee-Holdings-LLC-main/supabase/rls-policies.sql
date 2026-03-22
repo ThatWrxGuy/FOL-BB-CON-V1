@@ -1,9 +1,10 @@
 -- ============================================
 -- Row Level Security (RLS) Policies
 -- Run this in your Supabase SQL Editor
+-- NOTE: Use CREATE OR REPLACE if policies already exist
 -- ============================================
 
--- Enable RLS on all user tables
+-- Enable RLS on all user tables (if not already enabled)
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.user_achievements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.point_transactions ENABLE ROW LEVEL SECURITY;
